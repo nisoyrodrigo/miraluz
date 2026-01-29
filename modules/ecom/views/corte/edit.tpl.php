@@ -4,9 +4,6 @@ $operador = new Operador("WHERE user = ".$this->user->id);
 $sucursales = Sucursal::model()->findAll("WHERE id IN(".$operador->sucursales.")");
 
 $fechaDefault = !empty($data->fecha) ? date('Y-m-d', strtotime($data->fecha)) : date('Y-m-d');
-$fechaDefault = !empty($data->fecha)
-  ? date('Y-m-d', strtotime($data->fecha))
-  : date('Y-m-d', strtotime('-1 day'));
 
 ?>
 
