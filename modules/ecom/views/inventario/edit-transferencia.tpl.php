@@ -1,0 +1,111 @@
+<?php
+$noImage = $urlm("images/image-holder.jpg");
+$almacenes = Almacen::model()->findAll("WHERE estatus = 1 ORDER BY orden ASC");
+?>
+
+
+<form id="formEdit" class="form-horizontal" method="POST" action="<?=$url("ecom/".$this->interfaz."/saveTransferencia")?>" enctype="multipart/form-data">
+
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+    <i class="fa fa-pencil modal-icon"></i>
+    <h4 class="modal-title">Crear transferencia de almacen</h4>
+  </div>
+
+  <div class="modal-body">
+      
+    <input type="hidden" name="id" value="<?=$data->id?>" />
+
+    <div class="form-group row">
+      <label class="col-lg-2 col-form-label">Almacén origen</label>
+      <div class="col-lg-10">
+        <select class="form-control" name="almacen_origen" required>
+          <?foreach ($almacenes as $key => $value) {?>
+          <option value="<?=$value->id;?>"><?=$value->nombre?></option>
+          <?}?>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-lg-2 col-form-label">Almacén destino</label>
+      <div class="col-lg-10">
+        <select class="form-control" name="almacen_destino" required>
+          <?foreach ($almacenes as $key => $value) {?>
+          <option value="<?=$value->id;?>"><?=$value->nombre?></option>
+          <?}?>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-lg-2 col-form-label">Referencia</label>
+      <div class="col-lg-10">
+        <input type="text" class="form-control" name="referencia" value="<?=$data->referencia?>">
+      </div>
+    </div>
+      
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
+    <button id="btn-guardar" type="submit" class="btn btn-primary" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Guardando">Guardar</button>
+  </div>
+
+ </form>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+
+    $('.select2').select2({
+      dropdownParent: $('#myModal')
+    });
+
+
+    /*––––––––––––––––––––––– Distintivo ––––––––––––––––––––––-––––––*/
+    $(".portada-foto").click(function(){$("#portada").click();});
+    /*––––––––––––––––––––––– /Distintivo ––––––––––––––––––––––-––––––*/
+    $("#portada").change(function() {
+      var input = $(this)[0];
+      var url = $(this).val();
+      var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+      if (input.files && input.files[0] && (ext == "png" || ext == "jpeg" || ext == "jpg" || ext == "webp" || ext == "svg")){
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+           $('#portada-img').attr('src', e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+      else{
+        $('#portada-img').attr('src', '<?=$noImage?>');
+      }
+    });
+
+
+    $("#formEdit").submit(function(){
+      $("#btn-guardar").html("<i class='fa fa-spinner fa-spin '></i> Guardando");
+    });
+
+    $('#formEdit').ajaxForm(function(response) { 
+      console.log(response);
+      $("#btn-guardar").html("Guardar");
+      if(response.error == undefined){
+        alertMessage("Información guardada satisfactoriamente.", "success");
+        hideModal();
+        $('#tabla-data').DataTable().ajax.reload();
+        var url = "<?=$url("ecom/".$this->interfaz."/detalleTransferencia")?>?id=" + data.id;
+        window.open(url, '_blank');
+      } else {
+        alertMessage(response.error);
+        console.log("Error al guardar información");
+      }
+    });
+
+
+
+  });
+
+
+  /*––––––––––––––––––––––– /Producto fotos ––––––––––––––––––––––-––––––*/
+</script>

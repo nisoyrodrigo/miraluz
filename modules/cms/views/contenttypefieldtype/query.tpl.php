@@ -1,0 +1,268 @@
+<script language="Javascript" type="text/javascript" src="<?=$urlm("js/edit_area/edit_area_full.js")?>"></script>
+<script language="Javascript" type="text/javascript">
+		// initialisation
+		editAreaLoader.init({
+			id: "editor"	// id of the textarea to transform		
+			,start_highlight: true	// if start with highlight
+			,allow_resize: "both"
+			,word_wrap: true
+			,language: "en"
+			,syntax: "sql"	
+		});
+</script>
+<style>
+	.k-button{
+		margin-right:15px;
+		margin-top:20px
+	}
+</style>
+<form id="form-field">
+	<input type="hidden" name="field[id]" id="field_id" value="<?=$field->id?>"/>
+	<input type="hidden" name="conf[id]" id="conf_id" value="<?=$conf->id?>"/>
+<div class="container">
+	<div class="row">
+		<div class="col-lg-12">
+			<h1><a href="<?=$url("cms")?>">CMS</a> : <a href="<?=$url("cms/contenttype")?>"/>Tipos de Contenido</a> : <a href="<?=$url("cms/ContentTypeFieldType/init?CotentType=".$contentType->id)?>"><?=$contentType->name?></a> : <?=$field->name?></h1>
+			<br/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-2">
+			<label>Nombre del campo *</label> 
+		</div>
+		<div class="col-lg-10">
+			<input type="text" class="k-input k-textbox" id="name" name="field[name]" style="width:100%" value="<?=$field->name?>"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-2">
+			<label>Tipo de campo *</label>
+		</div>
+		<div class="col-lg-10">
+			<select id="field_type" name="field[field_type]" <?=($field->field_type != null ? "disabled" : "")?>></select>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-2">
+			<label style="text-align:left">Etiqueta del campo *</label>
+		</div>
+		<div class="col-lg-10">
+			<input type="text" class="k-input k-textbox" id="label" name="conf[label]" value="<?=$conf->label?>"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-2">
+			<label style="text-align:left">Obligatorio </label>
+		</div>
+		<div class="col-lg-10">
+			Si <input type="radio" name="conf[required]" value="1" <?=($conf->required == 1 ? "checked" : "")?>/>&nbsp;&nbsp;
+			No <input type="radio" name="conf[required]" value="0" <?=($conf->required == 0 ? "checked" : "")?>/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-2">
+			<label style="text-align:left">*Query</label><br/>
+			El resultado del query debe contener Text y Value para poder armar el ComboBox
+		</div>
+		<div class="col-lg-9">
+			<textarea id="editor" style="width:100%;height:250px"><?=$conf->query?></textarea>
+			<input type="hidden" name="conf[query]" id="query" value="<?=$conf->query?>"/>
+		</div>
+		<div class="col-lg-1">
+			<a href="javascript:void(0)" id="btnQueryValidate">Validar Query</a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-2">
+			<label style="text-align:left">Valor por defecto</label>
+		</div>
+		<div class="col-lg-10">
+			<input id="autocompletar"  style="width:350px" value=""/>
+			<input type="hidden" id="default_value" name="conf[default_value]" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-2">
+			<label>Numero de valores</label>
+		</div>
+		<div class="col-lg-10">
+			<select id="num_values" name="conf[num_values]"></select>
+		</div>
+	</div>
+	<div class="row" style="border-top:1px solid #000">
+		<div class="col-lg-12"> 
+			<a id="btn-guardar" class="k-button">Guardar</a>
+			<a id="btn-aplicar" class="k-button">aplicar</a>
+			<a id="btn-cancelar" class="k-button">Cancelar</a>
+		</div>
+	</div>
+</div>
+</form>
+<script>
+	$(document).ready(function (){
+		$("#allowed_values").addClass("k-textBox");
+
+		$("#autocompletar").kendoMultiSelect({
+            placeholder: "Selecciona...",
+            dataTextField: "text",
+            dataValueField: "value",
+            multiple: true,
+            separator: ";",
+            filter: "contains",
+            autoBind: true,
+            minLength: 3,
+            value: <?=json_encode(explode(",", $conf->default_value))?>,
+            dataSource: {
+                type: "jsonp",
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: "<?=$url("cms/contentTypeFieldType/getQuery")?>?conf_id=" + $("#conf_id").val(),
+                    }
+                }
+            }
+        });
+        
+
+		$("#length_field").addClass("k-textBox");
+
+		$("#btn-guardar").click(function (){
+			enviar(0);  
+		});
+
+		$("#btn-aplicar").click(function (){
+			enviar(1);  
+		});
+		
+		$("#btn-cancelar").click(function (){
+			location.href = '<?=$url("cms/ContentTypeFieldType/init?CotentType=".$contentType->id)?>';
+		});
+
+		$("#btnQueryValidate").click(function (){
+			queryValidate();
+		});
+	});
+	
+	function enviar(tipo){
+		$("#query").val(editAreaLoader.getValue("editor"));
+		$("#default_value").val($("#autocompletar").data("kendoMultiSelect").value());
+		$.post('<?=$url("cms/ContentTypeFieldType/save")?>', $("#form-field").serialize(), function(data){
+			if(data == ""){
+				if(tipo==0){
+					location.href = '<?=$url("cms/ContentTypeFieldType/init?CotentType=".$contentType->id)?>';
+				}
+				else{
+					notification.show({
+						title: "!Aviso",
+						message: "Guardado"
+					}, "success");
+				}
+			}
+			else if(data.error == ""){
+				if(tipo==0){
+					location.href = '<?=$url("cms/ContentTypeFieldType/init?CotentType=".$contentType->id)?>';
+				}
+				else{
+					notification.show({
+						title: "!Aviso",
+						message: "Guardado"
+					}, "success");
+				}
+			}
+			else if(data.error == undefined){
+				notification.show({
+					title: "!Aviso",
+					message: data
+				}, "error");
+			}
+			else if(data.error != ""){
+				notification.show({
+					title: "!Aviso",
+					message: data.error
+				}, "error");
+			}
+			
+		});
+	}
+	
+	$("#field_type").kendoComboBox({
+		dataTextField: "name",
+		dataValueField: "id",
+		dataSource: <?=json_encode($fieldTypes)?>,
+		filter: "contains",
+		suggest: true
+	}).data("kendoComboBox").value(<?=$field->field_type?>);
+
+
+	$("#num_values").kendoComboBox({
+		dataSource: [
+			{"value":0, "text":"Sin Limite"},
+			{"value":1, "text": "1"},
+			{"value":2, "text": "2"},
+			{"value":3, "text": "3"},
+			{"value":4, "text": "4"},
+			{"value":5, "text": "5"},
+			{"value":6, "text": "6"},
+			{"value":7, "text": "7"},
+			{"value":8, "text": "8"},
+			{"value":9, "text": "9"},
+			{"value":10, "text": "10"}
+		],
+		dataTextField: "text",
+		dataValueField: "value",
+		defaultValue: 1,
+		filter: "contains",
+		suggest: true
+	}).data("kendoComboBox").value(<?=$conf->num_values?>);
+
+	function queryValidate(){
+		var conf_id = $("#conf_id").val();
+		var field_id =$("#field_id").val();
+		var label = $("#label").val();
+		var sql = editAreaLoader.getValue("editor");
+		$.post("<?=$url("cms/ContentTypeFieldType/queryValidate")?>", {
+			conf_id: conf_id,
+			field_id : field_id,
+			label : label,
+			sql: sql,
+		}, function (data){
+			if(data.error == ""){
+				notification.show({
+					title: "!Aviso",
+					message: "Ok"
+				}, "success");
+				$("#conf_id").val(data.id);
+			}
+			else if(data.error == undefined){
+				notification.show({
+					title: "!Aviso",
+					message: data
+				}, "error");
+			}
+			else if(data.error != ""){
+				notification.show({
+					title: "!Aviso",
+					message: data.error
+				}, "error");
+			}
+			else{
+				notification.show({
+					title: "!Aviso",
+					message: data
+				}, "error");
+			}
+
+			$("#autocompletar").data("kendoAutoComplete").setDataSource({
+				severFiltering: true,
+				dataType: "post",
+				transport: {
+				    read: {
+				      url: "<?=$url("cms/contentTypeFieldType/getQuery")?>?conf_id=" + conf_id,
+				      dataType: "jsonp"
+					}
+				}
+			});
+
+		});
+	}
+</script>

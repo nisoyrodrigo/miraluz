@@ -1,0 +1,24 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteCond %{HTTP_HOST} ^(?:www\.)?(.+)$ [NC]
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R,L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)/(.*)/(.*)/$ index.php?module=$1&controller=$2&action=$3/$4 [QSA,L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)/(.*)/(.*)$ index.php?module=$1&controller=$2&action=$3$4 [QSA,L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)/(.*)/$ index.php?module=$1&controller=$2/$4 [QSA,L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)/(.*)$ index.php?module=$1&controller=$2$4 [QSA,L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)/$ index.php?module=$1/$4 [QSA,L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)$ index.php?module=$1$4 [QSA,L]
+</IfModule>
+<FilesMatch "\.(?i:pdf)$">
+  ForceType application/pdf
+  Header set Content-Disposition inline
+</FilesMatch>
+
