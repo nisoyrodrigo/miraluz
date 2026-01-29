@@ -1,6 +1,6 @@
 <?php
   class Motor{
-    
+
     public $absolute_url;
     public $base_url;
     public $modules;
@@ -10,10 +10,15 @@
     public $auth;
     public $https;
     public $mail_obj;
-    
+    public $aws_key;
+    public $aws_secret;
+
     function __construct(){
-      
+
       require 'config/config.php';
+
+      $this->aws_key = $config["aws_key"];
+      $this->aws_secret = $config["aws_secret"];
       //require 'lib/Mailer/PHPMailerAutoload.php';
 
       $this->absolute_url = str_replace("index.php", "", $_SERVER["SCRIPT_FILENAME"]);
