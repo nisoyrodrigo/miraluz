@@ -93,6 +93,50 @@ class VentaController extends Controller{
     $this->render("edit-estatus", array("data"=>$data));
   }
 
+  public function actionEditReceta(){
+    $this->template = null;
+    $data = new Venta($this->params["id"]);
+    $this->render("edit-receta", array("data"=>$data));
+  }
+
+  public function actionSaveReceta(){
+    $this->template = null;
+
+    $id = intval($this->params["id"] ?? 0);
+    if($id <= 0){
+      $this->error = "ID de venta no valido";
+      return $this->renderJSON();
+    }
+
+    $data = new Venta($id);
+    if(empty($data->id)){
+      $this->error = "Venta no encontrada";
+      return $this->renderJSON();
+    }
+
+    // Actualizar campos de receta
+    $data->od_av_con_lentes = $this->params["od_av_con_lentes"] ?? '';
+    $data->od_av_sin_lentes = $this->params["od_av_sin_lentes"] ?? '';
+    $data->od_av_con_correccion = $this->params["od_av_con_correccion"] ?? '';
+    $data->oi_av_con_lentes = $this->params["oi_av_con_lentes"] ?? '';
+    $data->oi_av_sin_lentes = $this->params["oi_av_sin_lentes"] ?? '';
+    $data->oi_av_con_correccion = $this->params["oi_av_con_correccion"] ?? '';
+    $data->tiene_miopia = intval($this->params["tiene_miopia"] ?? 0);
+    $data->tiene_hipermetropia = intval($this->params["tiene_hipermetropia"] ?? 0);
+    $data->tiene_astigmatismo = intval($this->params["tiene_astigmatismo"] ?? 0);
+    $data->observaciones = $this->params["observaciones"] ?? '';
+    $data->diagnostico = $this->params["diagnostico"] ?? '';
+    $data->tratamiento = $this->params["tratamiento"] ?? '';
+    $data->proxima_cita = !empty($this->params["proxima_cita"]) ? $this->params["proxima_cita"] : null;
+
+    if(!$data->save()){
+      $this->error = $data->error ?: "Error al guardar";
+      return $this->renderJSON();
+    }
+
+    $this->renderJSON(["success" => true, "id" => $data->id]);
+  }
+
   public function actionConfirmaVendedor(){
     $this->template = null;
     $this->render("confirma-vendedor", array("sucursal" => $this->params["sucursal"], "vendedor" => $this->params["vendedor"]));
@@ -965,6 +1009,27 @@ class VentaController extends Controller{
 
   }
 
+  /**
+   * Imprime la receta óptica de una venta
+   * Basado en el formato del Excel RECETA__1_.xlsx
+   */
+  public function actionImprimeReceta(){
+    $this->template = null;
+    $model = new Venta($this->params["id"]);
+    $cliente = new Cliente($model->cliente);
+    $sucursal = new Sucursal($model->sucursal);
+    $operador = new Operador("WHERE user = ".$model->user);
+
+    // Crear PDF de receta
+    $pdf = new PDF_Receta();
+    $pdf->AddPage();
+    $pdf->recetaCompleta($model, $cliente, $sucursal, $operador);
+
+    $folio = $model->folio ?? $model->id;
+    $nombreArchivo = 'receta_' . $folio . '.pdf';
+    $pdf->Output('I', $nombreArchivo);
+  }
+
   public function actionSaveEstatus(){
     $this->template = null;
     $aSalida = array();
@@ -1581,5 +1646,479 @@ class PDF_AbonoTicket extends FPDF
         $this->Ln(2);
         $this->MultiCell(0, 4, utf8_decode("¿SOLICITAS FACTURA? ENVÍA TUS DATOS AL: ".$sucursal->telefono_factura), 0, 'C');
         $this->Ln(2);
+    }
+}
+
+// ============================================
+// AGREGAR ESTA CLASE AL FINAL DEL ARCHIVO
+// (después de la clase PDF_AbonoTicket)
+// ============================================
+
+class PDF_Receta extends FPDF
+{
+    private $primaryColor = [41, 128, 185];    // Azul moderno
+    private $secondaryColor = [52, 73, 94];    // Gris oscuro
+    private $lightGray = [245, 247, 250];      // Fondo suave
+    private $borderColor = [189, 195, 199];    // Bordes sutiles
+
+    function __construct() {
+        parent::__construct('P', 'mm', 'Letter');
+        $this->SetAutoPageBreak(true, 15);
+    }
+
+    function recetaCompleta($model, $cliente, $sucursal, $operador)
+    {
+        $this->SetMargins(12, 12, 12);
+
+        // ========== ENCABEZADO ==========
+        $this->headerReceta($sucursal, $model);
+
+        // ========== DATOS DEL PACIENTE ==========
+        $this->Ln(4);
+        $this->datosPaciente($cliente);
+
+        // ========== AGUDEZA VISUAL ==========
+        $this->Ln(5);
+        $this->tablaAgudezaVisual($model);
+
+        // ========== IMAGEN DE DIAGNÓSTICOS + CHECKBOXES ==========
+        $this->Ln(5);
+        $this->seccionDiagnosticosVisual($model);
+
+        // ========== TABLA DE REFRACCIÓN ==========
+        $this->Ln(5);
+        $this->tablaRefraccion($model);
+
+        // ========== DIAGNÓSTICO Y TRATAMIENTO ==========
+        $this->Ln(4);
+        $this->seccionDiagnosticoTratamiento($model);
+
+        // ========== PRÓXIMA CITA ==========
+        $this->Ln(3);
+        $this->seccionProximaCita($model);
+
+        // ========== PIE DE PÁGINA / FIRMA ==========
+        $this->Ln(2);
+        $this->footerReceta($sucursal, $operador);
+    }
+
+    function headerReceta($sucursal, $model)
+    {
+        // Barra superior con color
+        $this->SetFillColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->Rect(0, 0, 216, 3, 'F');
+
+        $this->SetY(8);
+
+        // Logo a la izquierda
+        if(file_exists('images/optica_logo.jpg')){
+            $this->Image('images/optica_logo.jpg', 12, 8, 45);
+        }
+
+        // Título a la derecha
+        $this->SetXY(100, 10);
+        $this->SetFont('Arial', 'B', 18);
+        $this->SetTextColor($this->secondaryColor[0], $this->secondaryColor[1], $this->secondaryColor[2]);
+        $this->Cell(100, 8, utf8_decode('RECETA ÓPTICA'), 0, 1, 'R');
+
+        // Fecha
+        $this->SetXY(100, 20);
+        $this->SetFont('Arial', '', 9);
+        $this->SetTextColor(100, 100, 100);
+        $this->Cell(30, 5, 'Fecha:', 0, 0, 'R');
+        $this->SetFont('Arial', 'B', 9);
+        $this->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->Cell(30, 5, date('d/m/Y', strtotime($model->fecha_venta)), 0, 0, 'L');
+
+        // Folio
+        $this->SetFont('Arial', '', 9);
+        $this->SetTextColor(100, 100, 100);
+        $this->Cell(15, 5, 'Folio:', 0, 0, 'R');
+        $this->SetFont('Arial', 'B', 8);
+        $this->SetTextColor($this->secondaryColor[0], $this->secondaryColor[1], $this->secondaryColor[2]);
+        $folio = $model->folio ?? $model->id;
+        if(strlen($folio) > 18) {
+            $folio = substr($folio, 0, 18) . '...';
+        }
+        $this->Cell(25, 5, $folio, 0, 1, 'L');
+
+        // Línea separadora
+        $this->SetY(35);
+        $this->SetDrawColor($this->borderColor[0], $this->borderColor[1], $this->borderColor[2]);
+        $this->Line(12, 35, 204, 35);
+
+        $this->SetTextColor(0, 0, 0);
+    }
+
+    function datosPaciente($cliente)
+    {
+        $this->SetY(39);
+
+        // Título de sección
+        $this->SetFont('Arial', 'B', 10);
+        $this->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->Cell(0, 6, 'DATOS DEL PACIENTE', 0, 1, 'L');
+
+        // Caja con fondo
+        $this->SetFillColor($this->lightGray[0], $this->lightGray[1], $this->lightGray[2]);
+        $this->SetDrawColor($this->borderColor[0], $this->borderColor[1], $this->borderColor[2]);
+
+        $y = $this->GetY();
+        $this->RoundedRect(12, $y, 192, 12, 2, 'DF');
+
+        $this->SetY($y + 3);
+        $this->SetX(16);
+
+        // Nombre
+        $this->SetFont('Arial', 'B', 9);
+        $this->SetTextColor(100, 100, 100);
+        $this->Cell(18, 4, 'Paciente:', 0, 0, 'L');
+        $this->SetFont('Arial', '', 10);
+        $this->SetTextColor(0, 0, 0);
+        $this->Cell(75, 4, utf8_decode(strtoupper($cliente->nombre ?? '')), 0, 0, 'L');
+
+        // Teléfono
+        $this->SetFont('Arial', 'B', 9);
+        $this->SetTextColor(100, 100, 100);
+        $this->Cell(15, 4, 'Tel:', 0, 0, 'L');
+        $this->SetFont('Arial', '', 10);
+        $this->SetTextColor(0, 0, 0);
+        $this->Cell(30, 4, $cliente->telefono ?? '', 0, 0, 'L');
+
+        // Empresa
+        $this->SetFont('Arial', 'B', 9);
+        $this->SetTextColor(100, 100, 100);
+        $this->Cell(18, 4, 'Empresa:', 0, 0, 'L');
+        $this->SetFont('Arial', '', 10);
+        $this->SetTextColor(0, 0, 0);
+        $this->Cell(0, 4, utf8_decode(strtoupper($cliente->empresa ?? '-')), 0, 1, 'L');
+
+        $this->SetY($y + 14);
+        $this->SetTextColor(0, 0, 0);
+    }
+
+    function tablaAgudezaVisual($model)
+    {
+        // Título de sección
+        $this->SetFont('Arial', 'B', 10);
+        $this->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->Cell(95, 5, 'AGUDEZA VISUAL', 0, 0, 'L');
+        $this->Cell(95, 5, 'OBSERVACIONES', 0, 1, 'L');
+        $this->SetTextColor(0, 0, 0);
+
+        $y = $this->GetY();
+
+        // Tabla AV (lado izquierdo)
+        $this->SetFillColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->SetTextColor(255, 255, 255);
+        $this->SetFont('Arial', 'B', 8);
+
+        $this->Cell(14, 6, 'OJO', 1, 0, 'C', true);
+        $this->Cell(25, 6, 'CON LENTES', 1, 0, 'C', true);
+        $this->Cell(25, 6, 'SIN LENTES', 1, 0, 'C', true);
+        $this->Cell(25, 6, utf8_decode('CORRECCIÓN'), 1, 0, 'C', true);
+
+        // Espacio para observaciones
+        $this->SetXY(102, $y);
+        $this->SetFillColor($this->lightGray[0], $this->lightGray[1], $this->lightGray[2]);
+        $this->SetDrawColor($this->borderColor[0], $this->borderColor[1], $this->borderColor[2]);
+        $obsY = $y;
+        $this->MultiCell(102, 18, '', 1, 'L', true);
+
+        // Filas de datos
+        $this->SetY($y + 6);
+        $this->SetTextColor(0, 0, 0);
+        $this->SetFont('Arial', '', 9);
+
+        // OD
+        $this->SetFont('Arial', 'B', 9);
+        $this->SetFillColor($this->lightGray[0], $this->lightGray[1], $this->lightGray[2]);
+        $this->Cell(14, 6, 'OD', 1, 0, 'C', true);
+        $this->SetFont('Arial', '', 9);
+        $this->Cell(25, 6, $model->od_av_con_lentes ?? '', 1, 0, 'C');
+        $this->Cell(25, 6, $model->od_av_sin_lentes ?? '', 1, 0, 'C');
+        $this->Cell(25, 6, $model->od_av_con_correccion ?? '', 1, 1, 'C');
+
+        // OI
+        $this->SetFont('Arial', 'B', 9);
+        $this->Cell(14, 6, 'OI', 1, 0, 'C', true);
+        $this->SetFont('Arial', '', 9);
+        $this->Cell(25, 6, $model->oi_av_con_lentes ?? '', 1, 0, 'C');
+        $this->Cell(25, 6, $model->oi_av_sin_lentes ?? '', 1, 0, 'C');
+        $this->Cell(25, 6, $model->oi_av_con_correccion ?? '', 1, 1, 'C');
+
+        // Escribir observaciones
+        $this->SetXY(104, $obsY + 2);
+        $this->SetFont('Arial', '', 9);
+        $this->MultiCell(98, 4, utf8_decode($model->observaciones ?? ''), 0, 'L');
+
+        $this->SetY($obsY + 18);
+    }
+
+    function seccionDiagnosticosVisual($model)
+    {
+        // Título de sección
+        $this->SetFont('Arial', 'B', 10);
+        $this->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->Cell(0, 5, utf8_decode('DIAGNÓSTICO VISUAL'), 0, 1, 'L');
+        $this->SetTextColor(0, 0, 0);
+
+        $y = $this->GetY();
+
+        // Imagen de diagnósticos
+        $imgPath = 'images/optica_diagnosticos.png';
+        $imgWidth = 180;
+        $imgX = 18;
+        $imgHeight = 36;
+
+        if(file_exists($imgPath)){
+            $this->Image($imgPath, $imgX, $y, $imgWidth);
+        }
+
+        // Mover cursor DEBAJO de la imagen
+        $checkY = $y + $imgHeight + 3;
+
+        // Calcular posiciones para los 3 checkboxes
+        $tercio = $imgWidth / 3;
+
+        // Checkbox 1: MIOPÍA
+        $x1 = $imgX + ($tercio / 2) - 12;
+        $this->checkboxConEtiqueta($x1, $checkY, utf8_decode('MIOPÍA'), $model->tiene_miopia == '1');
+
+        // Checkbox 2: HIPERMETROPÍA
+        $x2 = $imgX + $tercio + ($tercio / 2) - 18;
+        $this->checkboxConEtiqueta($x2, $checkY, utf8_decode('HIPERMETROPÍA'), $model->tiene_hipermetropia == '1');
+
+        // Checkbox 3: ASTIGMATISMO
+        $x3 = $imgX + (2 * $tercio) + ($tercio / 2) - 15;
+        $this->checkboxConEtiqueta($x3, $checkY, 'ASTIGMATISMO', $model->tiene_astigmatismo == '1');
+
+        $this->SetY($checkY + 8);
+    }
+
+    function checkboxConEtiqueta($x, $y, $label, $checked)
+    {
+        $this->SetXY($x, $y);
+
+        // Checkbox moderno
+        $this->SetDrawColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->SetLineWidth(0.4);
+
+        if($checked){
+            $this->SetFillColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+            $this->Rect($x, $y, 5, 5, 'DF');
+            $this->SetTextColor(255, 255, 255);
+            $this->SetFont('Arial', 'B', 10);
+            $this->SetXY($x, $y - 0.5);
+            $this->Cell(5, 6, 'X', 0, 0, 'C');
+        } else {
+            $this->SetFillColor(255, 255, 255);
+            $this->Rect($x, $y, 5, 5, 'DF');
+        }
+
+        // Etiqueta
+        $this->SetTextColor($this->secondaryColor[0], $this->secondaryColor[1], $this->secondaryColor[2]);
+        $this->SetFont('Arial', 'B', 9);
+        $this->SetXY($x + 7, $y);
+        $this->Cell(40, 5, $label, 0, 0, 'L');
+
+        $this->SetLineWidth(0.2);
+        $this->SetTextColor(0, 0, 0);
+    }
+
+    function tablaRefraccion($model)
+    {
+        // Título de sección
+        $this->SetFont('Arial', 'B', 10);
+        $this->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->Cell(0, 5, utf8_decode('REFRACCIÓN'), 0, 1, 'L');
+        $this->SetTextColor(0, 0, 0);
+
+        // Encabezados
+        $this->SetFillColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->SetTextColor(255, 255, 255);
+        $this->SetFont('Arial', 'B', 8);
+
+        $this->Cell(18, 6, '', 1, 0, 'C', true);
+        $this->Cell(28, 6, 'ESFERA', 1, 0, 'C', true);
+        $this->Cell(28, 6, 'CILINDRO', 1, 0, 'C', true);
+        $this->Cell(22, 6, 'EJE', 1, 0, 'C', true);
+        $this->Cell(28, 6, 'ADD', 1, 0, 'C', true);
+        $this->Cell(22, 6, 'DNP', 1, 0, 'C', true);
+        $this->Cell(28, 6, 'ALTURA', 1, 0, 'C', true);
+        $this->Cell(22, 6, 'DIP', 1, 1, 'C', true);
+
+        $this->SetTextColor(0, 0, 0);
+        $this->SetFont('Arial', '', 9);
+
+        // Fila OD
+        $this->SetFillColor($this->lightGray[0], $this->lightGray[1], $this->lightGray[2]);
+        $this->SetFont('Arial', 'B', 9);
+        $this->Cell(18, 7, 'OD', 1, 0, 'C', true);
+        $this->SetFont('Arial', '', 9);
+        $this->Cell(28, 7, $this->formatearValor($model->od_esfera), 1, 0, 'C');
+        $this->Cell(28, 7, $this->formatearValor($model->od_cilindro), 1, 0, 'C');
+        $this->Cell(22, 7, $model->od_eje ?? '', 1, 0, 'C');
+        $this->Cell(28, 7, $this->formatearValor($model->od_add), 1, 0, 'C');
+        $this->Cell(22, 7, $model->od_dnp ?? '', 1, 0, 'C');
+        $this->Cell(28, 7, $model->od_altura ?? '', 1, 0, 'C');
+        $dipTotal = (floatval($model->od_dnp ?? 0) + floatval($model->oi_dnp ?? 0));
+        $this->Cell(22, 7, $dipTotal > 0 ? $dipTotal : '', 1, 1, 'C');
+
+        // Fila OI
+        $this->SetFont('Arial', 'B', 9);
+        $this->Cell(18, 7, 'OI', 1, 0, 'C', true);
+        $this->SetFont('Arial', '', 9);
+        $this->Cell(28, 7, $this->formatearValor($model->oi_esfera), 1, 0, 'C');
+        $this->Cell(28, 7, $this->formatearValor($model->oi_cilindro), 1, 0, 'C');
+        $this->Cell(22, 7, $model->oi_eje ?? '', 1, 0, 'C');
+        $this->Cell(28, 7, $this->formatearValor($model->oi_add), 1, 0, 'C');
+        $this->Cell(22, 7, $model->oi_dnp ?? '', 1, 0, 'C');
+        $this->Cell(28, 7, $model->oi_altura ?? '', 1, 0, 'C');
+        $this->Cell(22, 7, '', 1, 1, 'C');
+    }
+
+    function formatearValor($valor)
+    {
+        if(empty($valor) || $valor == '0' || $valor == '0.00'){
+            return '';
+        }
+        $num = floatval($valor);
+        if($num > 0){
+            return '+' . number_format($num, 2);
+        }
+        return number_format($num, 2);
+    }
+
+    function seccionDiagnosticoTratamiento($model)
+    {
+        // Dos columnas: Diagnóstico y Tratamiento
+        $colWidth = 93;
+
+        // Títulos
+        $this->SetFont('Arial', 'B', 10);
+        $this->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->Cell($colWidth, 5, utf8_decode('DIAGNÓSTICO'), 0, 0, 'L');
+        $this->Cell($colWidth, 5, 'TRATAMIENTO', 0, 1, 'L');
+        $this->SetTextColor(0, 0, 0);
+
+        $y = $this->GetY();
+
+        // Caja diagnóstico
+        $this->SetFillColor($this->lightGray[0], $this->lightGray[1], $this->lightGray[2]);
+        $this->SetDrawColor($this->borderColor[0], $this->borderColor[1], $this->borderColor[2]);
+        $this->RoundedRect(12, $y, $colWidth, 16, 2, 'DF');
+
+        // Caja tratamiento
+        $this->RoundedRect(12 + $colWidth + 2, $y, $colWidth, 16, 2, 'DF');
+
+        // Texto diagnóstico
+        $this->SetXY(14, $y + 2);
+        $this->SetFont('Arial', '', 9);
+        $this->MultiCell($colWidth - 4, 4, utf8_decode($model->diagnostico ?? ''), 0, 'L');
+
+        // Texto tratamiento
+        $this->SetXY(14 + $colWidth + 2, $y + 2);
+        $this->MultiCell($colWidth - 4, 4, utf8_decode($model->tratamiento ?? ''), 0, 'L');
+
+        $this->SetY($y + 18);
+    }
+
+    function seccionProximaCita($model)
+    {
+        $this->SetFont('Arial', 'B', 10);
+        $this->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+        $this->Cell(32, 6, utf8_decode('PRÓXIMA CITA:'), 0, 0, 'L');
+
+        $this->SetTextColor(0, 0, 0);
+        $this->SetFont('Arial', '', 10);
+
+        $proximaCita = date('d/m/Y', strtotime($model->fecha_venta . ' +1 year'));
+        if(!empty($model->proxima_cita)){
+            $proximaCita = date('d/m/Y', strtotime($model->proxima_cita));
+        }
+
+        $this->SetFillColor($this->lightGray[0], $this->lightGray[1], $this->lightGray[2]);
+        $this->SetDrawColor($this->borderColor[0], $this->borderColor[1], $this->borderColor[2]);
+        $this->Cell(32, 6, $proximaCita, 1, 1, 'C', true);
+    }
+
+    function footerReceta($sucursal, $operador)
+    {
+        // Espacio antes de la firma
+        $this->Ln(4);
+
+        // Imagen de firma (Héctor Hernandez)
+        $firmaPath = 'images/optica_firma.jpg';
+        if(file_exists($firmaPath)){
+            $firmaWidth = 40;
+            $firmaX = (216 - $firmaWidth) / 2; // Centrada
+            $this->Image($firmaPath, $firmaX, $this->GetY(), $firmaWidth);
+            $this->Ln(22); // Espacio para la imagen de firma
+        } else {
+            $this->Ln(8);
+        }
+
+        // Línea para firma centrada
+        $this->SetDrawColor($this->secondaryColor[0], $this->secondaryColor[1], $this->secondaryColor[2]);
+        $this->Line(80, $this->GetY(), 135, $this->GetY());
+
+        // Espacio entre línea y nombre
+        $this->Ln(2);
+
+        // Datos de Héctor Hernandez (fijo para todas las recetas)
+        $this->SetFont('Arial', 'B', 8);
+        $this->SetTextColor($this->secondaryColor[0], $this->secondaryColor[1], $this->secondaryColor[2]);
+        $this->Cell(0, 4, utf8_decode('HÉCTOR HERNÁNDEZ VELÁZQUEZ'), 0, 1, 'C');
+
+        $this->SetFont('Arial', '', 7);
+        $this->SetTextColor(100, 100, 100);
+        $this->Cell(0, 3, utf8_decode('PROFNAL. TEC. BACH. EN OPTOMETRÍA | Céd. Prof. 7093796'), 0, 1, 'C');
+
+        // Contacto
+        $this->SetFont('Arial', '', 6);
+        $contacto = $sucursal->nombre . ' | ' . ($sucursal->telefono ?? '') . ' | opticasmiraluz@gmail.com';
+        $this->Cell(0, 3, utf8_decode($contacto), 0, 1, 'C');
+
+        $this->SetTextColor(0, 0, 0);
+    }
+
+    // Función auxiliar para rectángulos redondeados
+    function RoundedRect($x, $y, $w, $h, $r, $style = '')
+    {
+        $k = $this->k;
+        $hp = $this->h;
+        if($style=='F')
+            $op='f';
+        elseif($style=='FD' || $style=='DF')
+            $op='B';
+        else
+            $op='S';
+        $MyArc = 4/3 * (sqrt(2) - 1);
+        $this->_out(sprintf('%.2F %.2F m',($x+$r)*$k,($hp-$y)*$k ));
+        $xc = $x+$w-$r ;
+        $yc = $y+$r;
+        $this->_out(sprintf('%.2F %.2F l', $xc*$k,($hp-$y)*$k ));
+        $this->_Arc($xc + $r*$MyArc, $yc - $r, $xc + $r, $yc - $r*$MyArc, $xc + $r, $yc);
+        $xc = $x+$w-$r ;
+        $yc = $y+$h-$r;
+        $this->_out(sprintf('%.2F %.2F l',($x+$w)*$k,($hp-$yc)*$k));
+        $this->_Arc($xc + $r, $yc + $r*$MyArc, $xc + $r*$MyArc, $yc + $r, $xc, $yc + $r);
+        $xc = $x+$r ;
+        $yc = $y+$h-$r;
+        $this->_out(sprintf('%.2F %.2F l',$xc*$k,($hp-($y+$h))*$k));
+        $this->_Arc($xc - $r*$MyArc, $yc + $r, $xc - $r, $yc + $r*$MyArc, $xc - $r, $yc);
+        $xc = $x+$r ;
+        $yc = $y+$r;
+        $this->_out(sprintf('%.2F %.2F l',($x)*$k,($hp-$yc)*$k ));
+        $this->_Arc($xc - $r, $yc - $r*$MyArc, $xc - $r*$MyArc, $yc - $r, $xc, $yc - $r);
+        $this->_out($op);
+    }
+
+    function _Arc($x1, $y1, $x2, $y2, $x3, $y3)
+    {
+        $h = $this->h;
+        $this->_out(sprintf('%.2F %.2F %.2F %.2F %.2F %.2F c ', $x1*$this->k, ($h-$y1)*$this->k,
+            $x2*$this->k, ($h-$y2)*$this->k, $x3*$this->k, ($h-$y3)*$this->k));
     }
 }

@@ -38,6 +38,7 @@
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th></th>
                 </tr>
               </thead>
             </table>
@@ -125,6 +126,13 @@
             sHtml += "&nbsp;<button class=\"act-btn boton-estatus\"><i class=\"fas fa-bell\"></i></button>";
             return sHtml;
           }
+        },
+        {
+          "data": function(row){
+            var sHtml = "";
+            sHtml += "&nbsp;<button class=\"act-btn boton-receta\" title=\"Imprimir receta\"><i class=\"fas fa-file-medical\"></i></button>";
+            return sHtml;
+          }
         }
       ],
       "language": {
@@ -174,6 +182,9 @@
       if(button.hasClass("boton-archivo")){
         var url = "<?=$url("ecom/venta/imprimeticket")?>?id=" + data.id;
         window.open(url, '_blank');
+      }
+      if(button.hasClass("boton-receta")){
+        modalBootStrapProducto('<?=$url("ecom/".$this->interfaz."/editReceta")?>?id=' + data.id,'', '60');
       }
     });
 
