@@ -78,7 +78,7 @@ function tiene_permiso($seccion, $permiso, $rol){
 
             <?if(tiene_permiso("Producto", "Init", $user->rol)):?>
             <li>
-              <a href="<?=$url("ecom/producto/")?>"><i class="fas fa-glasses"></i><span class="nav-label"> Productos</span></a>
+              <a href="<?=$url("ecom/producto")?>"><i class="fas fa-glasses"></i><span class="nav-label"> Productos</span></a>
             </li>
             <?endif;?>
 
