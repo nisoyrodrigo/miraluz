@@ -185,9 +185,9 @@
 
 /* Contenedor de tabla */
 .ibox-content .table-responsive {
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* Tabla general */
@@ -197,6 +197,7 @@
   border-spacing: 0;
   width: 100% !important;
   margin-bottom: 0 !important;
+  font-size: 12px;
 }
 
 /* Header de tabla */
@@ -205,33 +206,34 @@
   background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   color: #fff;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 14px 12px;
+  letter-spacing: 0.3px;
+  padding: 10px 8px;
   border: none !important;
   white-space: nowrap;
 }
 
 .data-table thead th:first-child {
-  border-top-left-radius: 10px;
+  border-top-left-radius: 8px;
 }
 
 .data-table thead th:last-child {
-  border-top-right-radius: 10px;
+  border-top-right-radius: 8px;
 }
 
 /* Celdas del body */
 .data-table tbody td,
 .table.dataTable tbody td {
-  padding: 12px;
+  padding: 8px 6px;
   vertical-align: middle;
   border-top: 1px solid #eef2f7 !important;
   border-bottom: none !important;
   border-left: none !important;
   border-right: none !important;
-  font-size: 14px;
+  font-size: 12px;
   color: #4a5568;
+  white-space: nowrap;
 }
 
 /* Filas zebra */
@@ -254,11 +256,11 @@
 
 /* Última fila - bordes redondeados */
 .data-table tbody tr:last-child td:first-child {
-  border-bottom-left-radius: 10px;
+  border-bottom-left-radius: 8px;
 }
 
 .data-table tbody tr:last-child td:last-child {
-  border-bottom-right-radius: 10px;
+  border-bottom-right-radius: 8px;
 }
 
 
@@ -270,22 +272,22 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: #e2e8f0 !important;
   color: #64748b !important;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   text-decoration: none;
 }
 
 .act-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
 }
 
 /* Info / Detalle - Azul */
