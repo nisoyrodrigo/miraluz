@@ -33,7 +33,9 @@
                   <th>Fondo</th>
                   <th>Depósito</th>
 
-                  <th>Acciones</th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
 
                 </tr>
               </thead>
@@ -139,26 +141,31 @@
           "title": "Depósito"
         },
 
-        // --- ACCIONES ---
+        // --- ACCIONES (cada una en su columna) ---
         {
           "data": function(row){
-            var sHtml = "";
-
-            // Detalle (modal)
-            sHtml += "<button class=\"act-btn boton-info\" title=\"Detalle\"><i class=\"fa fa-info\"></i></button>";
-
-            // Imprimir
-            sHtml += "&nbsp;<a class=\"act-btn boton-print\" title=\"Imprimir\" target=\"_blank\" href=\"<?=$url("ecom/".$this->interfaz."/imprimeCorte")?>?id=" + row.id + "\">"
+            return "<button class=\"act-btn boton-info\" title=\"Detalle\"><i class=\"fa fa-info\"></i></button>";
+          },
+          "orderable": false,
+          "searchable": false
+        },
+        {
+          "data": function(row){
+            return "<a class=\"act-btn boton-print\" title=\"Imprimir\" target=\"_blank\" href=\"<?=$url("ecom/".$this->interfaz."/imprimeCorte")?>?id=" + row.id + "\">"
                    + "<i class=\"fa fa-print\"></i></a>";
-
+          },
+          "orderable": false,
+          "searchable": false
+        },
+        {
+          "data": function(row){
             // Recalcular (solo si es del día de hoy)
             var hoy = new Date();
             var hoyStr = String(hoy.getDate()).padStart(2,'0') + '/' + String(hoy.getMonth()+1).padStart(2,'0') + '/' + hoy.getFullYear();
             if(row.fecha === hoyStr){
-              sHtml += "&nbsp;<button class=\"act-btn boton-recalcular\" title=\"Recalcular (agregar movimientos nuevos)\"><i class=\"fa fa-refresh\"></i></button>";
+              return "<button class=\"act-btn boton-recalcular\" title=\"Recalcular (agregar movimientos nuevos)\"><i class=\"fa fa-retweet\"></i></button>";
             }
-
-            return sHtml;
+            return "";
           },
           "orderable": false,
           "searchable": false
@@ -211,7 +218,7 @@
             alertMessage('Error al recalcular el corte.');
           },
           complete: function(){
-            button.prop('disabled', false).html('<i class="fa fa-refresh"></i>');
+            button.prop('disabled', false).html('<i class="fa fa-retweet"></i>');
           }
         });
       }
