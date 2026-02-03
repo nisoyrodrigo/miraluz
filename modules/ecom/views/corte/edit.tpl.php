@@ -88,21 +88,33 @@ $fechaDefault = !empty($data->fecha) ? date('Y-m-d', strtotime($data->fecha)) : 
       <!-- DEPOSITO -->
       <div class="col-md-6">
         <div class="well" style="margin-bottom:0;">
-          <h4 style="margin-top:0;">Depósito sugerido</h4>
+          <h4 style="margin-top:0;">Caja y Depósito</h4>
+
+          <div style="display:flex; justify-content:space-between; color:#888;">
+            <span>Fondo del día anterior:</span>
+            <b id="fondo_caja">$0.00</b>
+          </div>
+
+          <div style="display:flex; justify-content:space-between;">
+            <span>+ Efectivo del día:</span>
+            <b id="efectivo_dia">$0.00</b>
+          </div>
+
+          <hr style="margin:8px 0;">
 
           <div style="display:flex; justify-content:space-between;">
             <span>Efectivo disponible:</span>
             <b id="efectivo_disponible">$0.00</b>
           </div>
 
-          <div style="display:flex; justify-content:space-between;">
-            <span>Te quedas para caja (tope):</span>
+          <div style="display:flex; justify-content:space-between; color:#888;">
+            <span>Te quedas para mañana (tope):</span>
             <b id="tope_caja">$1,100.00</b>
           </div>
 
-          <div style="display:flex; justify-content:space-between; font-size:16px;">
+          <div style="display:flex; justify-content:space-between; font-size:16px; margin-top:5px;">
             <span>Depósito sugerido:</span>
-            <b id="deposito_sugerido">$0.00</b>
+            <b id="deposito_sugerido" style="color:#c0392b;">$0.00</b>
           </div>
         </div>
       </div>
@@ -269,7 +281,9 @@ $fechaDefault = !empty($data->fecha) ? date('Y-m-d', strtotime($data->fecha)) : 
           return;
         }
 
-        // Depósito
+        // Caja y Depósito
+        $('#fondo_caja').text(money(res.deposito.fondo_caja));
+        $('#efectivo_dia').text(money(res.totales.efectivo || 0));
         $('#efectivo_disponible').text(money(res.deposito.efectivo_disponible));
         $('#tope_caja').text(money(res.deposito.tope_caja));
         $('#deposito_sugerido').text(money(res.deposito.deposito_sugerido));

@@ -98,12 +98,34 @@ class CorteController extends Controller{
 
     try {
 
-      // 3.1) Crear corte base
+      // 3.1) Obtener fondo de caja del día anterior (último corte cerrado de la sucursal)
+      $fondo = 0.0;
+      $topeCaja = 1100.0;
+
+      $corteAnterior = Corte::model()->executeQuery("
+        SELECT fondo_caja, efectivo_ingreso
+        FROM ec_corte
+        WHERE sucursal = $sucursalId
+          AND fecha < '$fecha'
+          AND estatus = 2
+        ORDER BY fecha DESC
+        LIMIT 1
+      ");
+
+      if(!empty($corteAnterior)){
+        $fondoAnterior = floatval($corteAnterior[0]->fondo_caja ?? 0);
+        $efectivoAnterior = floatval($corteAnterior[0]->efectivo_ingreso ?? 0);
+        // Lo que quedó para el día siguiente del corte anterior
+        $fondo = min($topeCaja, $fondoAnterior + $efectivoAnterior);
+      }
+
+      // 3.2) Crear corte base
       $corte = new Corte();
       $corte->setAttributes($this->params);
       $corte->user = $this->user->id;
       $corte->sucursal = $sucursalId;
       $corte->fecha = $fecha;
+      $corte->fondo_caja = $fondo;
 
       // si tienes default estatus en DB, puedes omitirlo
       $corte->estatus = 1;
@@ -112,7 +134,7 @@ class CorteController extends Controller{
         throw new Exception($corte->error ?: "No se pudo guardar el corte.");
       }
 
-      // 3.2) Amarrar movimientos del día al corte
+      // 3.3) Amarrar movimientos del día al corte
       // (solo ingresos, ventas no canceladas, misma sucursal, dentro del rango)
       VentaMovimiento::model()->executeQuery("
         UPDATE ec_venta_movimiento vm
@@ -126,7 +148,7 @@ class CorteController extends Controller{
           AND vm.created <  '$fin'
       ");
 
-      // 3.3) Recalcular totales YA amarrados (snapshot)
+      // 3.4) Recalcular totales YA amarrados (snapshot)
       $tot = VentaMovimiento::model()->executeQuery("
         SELECT vm.forma_pago, IFNULL(SUM(vm.monto),0) AS total
         FROM ec_venta_movimiento vm
@@ -145,19 +167,17 @@ class CorteController extends Controller{
       $corte->tarjetac_ingreso = $map["tarjetac"];
       $corte->vales_ingreso    = $map["vales"];
 
-      // 3.4) Contados (si no vienen, 0)
+      // 3.5) Contados (si no vienen, 0)
       $corte->efectivo_contado = floatval($this->params["efectivo_contado"] ?? 0);
       $corte->tarjeta_contado  = floatval($this->params["tarjeta_contado"] ?? 0);
       $corte->tarjetac_contado = floatval($this->params["tarjetac_contado"] ?? 0);
       $corte->vales_contado    = floatval($this->params["vales_contado"] ?? 0);
 
-      // 3.5) Depósito sugerido (tu regla)
-      $fondo = floatval($corte->fondo_caja ?? 0);
-      $topeCaja = 1100.0;
+      // 3.6) Depósito sugerido (tu regla)
       $efectivoDisponible = $fondo + $corte->efectivo_ingreso;
       $corte->deposito = max(0, $efectivoDisponible - $topeCaja);
 
-      // 3.6) Cerrar
+      // 3.7) Cerrar
       $corte->estatus = 2;
       $corte->cerrado_at = date('Y-m-d H:i:s');
 
@@ -236,10 +256,29 @@ class CorteController extends Controller{
       ORDER BY vm.banco, vm.tarjeta_digitos
     ");
 
-    // Regla depósito: te puedes quedar solo con 1100 para el día siguiente
-    $fondo = floatval($this->params["fondo_caja"] ?? 0); // opcional si quieres incluirlo
+    // Obtener fondo de caja del día anterior (último corte cerrado de la sucursal)
+    $fondo = 0.0;
+    $topeCaja = 1100.0;
+
+    $corteAnterior = Corte::model()->executeQuery("
+      SELECT fondo_caja, efectivo_ingreso
+      FROM ec_corte
+      WHERE sucursal = $sucursal
+        AND fecha < '$fecha'
+        AND estatus = 2
+      ORDER BY fecha DESC
+      LIMIT 1
+    ");
+
+    if(!empty($corteAnterior)){
+      $fondoAnterior = floatval($corteAnterior[0]->fondo_caja ?? 0);
+      $efectivoAnterior = floatval($corteAnterior[0]->efectivo_ingreso ?? 0);
+      // Lo que quedó para el día siguiente del corte anterior
+      $fondo = min($topeCaja, $fondoAnterior + $efectivoAnterior);
+    }
+
     $efectivoDisponible = $fondo + $map["efectivo"];
-    $dejarCaja = 1100.0;
+    $dejarCaja = $topeCaja;
     $depositoSugerido = max(0, $efectivoDisponible - $dejarCaja);
     $efectivoParaManana = min($dejarCaja, $efectivoDisponible);
 
