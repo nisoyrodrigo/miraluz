@@ -177,3 +177,273 @@
 .swal2-container {
   z-index: 10060 !important; /* Ajusta según el z-index del modal */
 }
+
+
+/* ============================================
+   TABLAS MODERNAS - DataTables
+   ============================================ */
+
+/* Contenedor de tabla */
+.ibox-content .table-responsive {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Tabla general */
+.data-table,
+.table.dataTable {
+  border-collapse: separate !important;
+  border-spacing: 0;
+  width: 100% !important;
+  margin-bottom: 0 !important;
+}
+
+/* Header de tabla */
+.data-table thead th,
+.table.dataTable thead th {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 12px;
+  border: none !important;
+  white-space: nowrap;
+}
+
+.data-table thead th:first-child {
+  border-top-left-radius: 10px;
+}
+
+.data-table thead th:last-child {
+  border-top-right-radius: 10px;
+}
+
+/* Celdas del body */
+.data-table tbody td,
+.table.dataTable tbody td {
+  padding: 12px;
+  vertical-align: middle;
+  border-top: 1px solid #eef2f7 !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  font-size: 14px;
+  color: #4a5568;
+}
+
+/* Filas zebra */
+.data-table tbody tr:nth-child(odd),
+.table.dataTable tbody tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+.data-table tbody tr:nth-child(even),
+.table.dataTable tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* Hover en filas */
+.data-table tbody tr:hover,
+.table.dataTable tbody tr:hover {
+  background-color: #edf7ed !important;
+  transition: background-color 0.2s ease;
+}
+
+/* Última fila - bordes redondeados */
+.data-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+
+.data-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}
+
+
+/* ============================================
+   BOTONES DE ACCIÓN MODERNOS
+   ============================================ */
+
+.act-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background-color: #e2e8f0 !important;
+  color: #64748b !important;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.act-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Info / Detalle - Azul */
+.act-btn.boton-info {
+  background-color: #e0f2fe !important;
+  color: #0284c7 !important;
+}
+.act-btn.boton-info:hover {
+  background-color: #0284c7 !important;
+  color: #fff !important;
+}
+
+/* Imprimir - Verde */
+.act-btn.boton-print {
+  background-color: #dcfce7 !important;
+  color: #16a34a !important;
+}
+.act-btn.boton-print:hover {
+  background-color: #16a34a !important;
+  color: #fff !important;
+}
+
+/* Editar - Naranja */
+.act-btn.boton-editar {
+  background-color: #fef3c7 !important;
+  color: #d97706 !important;
+}
+.act-btn.boton-editar:hover {
+  background-color: #d97706 !important;
+  color: #fff !important;
+}
+
+/* Eliminar - Rojo */
+.act-btn.boton-eliminar {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+}
+.act-btn.boton-eliminar:hover {
+  background-color: #dc2626 !important;
+  color: #fff !important;
+}
+
+/* Recalcular - Morado */
+.act-btn.boton-recalcular {
+  background-color: #f3e8ff !important;
+  color: #9333ea !important;
+}
+.act-btn.boton-recalcular:hover {
+  background-color: #9333ea !important;
+  color: #fff !important;
+}
+
+/* Detalle (otro) - Cyan */
+.act-btn.boton-detalle {
+  background-color: #cffafe !important;
+  color: #0891b2 !important;
+}
+.act-btn.boton-detalle:hover {
+  background-color: #0891b2 !important;
+  color: #fff !important;
+}
+
+/* Archivo/PDF - Rojo suave */
+.act-btn.boton-archivo {
+  background-color: #ffe4e6 !important;
+  color: #e11d48 !important;
+}
+.act-btn.boton-archivo:hover {
+  background-color: #e11d48 !important;
+  color: #fff !important;
+}
+
+/* Abono - Verde esmeralda */
+.act-btn.boton-abono {
+  background-color: #d1fae5 !important;
+  color: #059669 !important;
+}
+.act-btn.boton-abono:hover {
+  background-color: #059669 !important;
+  color: #fff !important;
+}
+
+/* Estatus - Amarillo */
+.act-btn.boton-estatus {
+  background-color: #fef9c3 !important;
+  color: #ca8a04 !important;
+}
+.act-btn.boton-estatus:hover {
+  background-color: #ca8a04 !important;
+  color: #fff !important;
+}
+
+/* Receta - Rosa */
+.act-btn.boton-receta {
+  background-color: #fce7f3 !important;
+  color: #db2777 !important;
+}
+.act-btn.boton-receta:hover {
+  background-color: #db2777 !important;
+  color: #fff !important;
+}
+
+
+/* ============================================
+   DATATABLES - PAGINACIÓN Y CONTROLES
+   ============================================ */
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  padding: 6px 12px;
+  margin: 0 2px;
+  border-radius: 6px !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #fff !important;
+  color: #64748b !important;
+  transition: all 0.2s ease;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: linear-gradient(135deg, #cdd464 0%, #b8bf4a 100%) !important;
+  border-color: #cdd464 !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Input de búsqueda */
+.dataTables_wrapper .dataTables_filter input {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+}
+
+.dataTables_wrapper .dataTables_filter input:focus {
+  border-color: #cdd464;
+  box-shadow: 0 0 0 3px rgba(205, 212, 100, 0.2);
+  outline: none;
+}
+
+/* Selector de cantidad */
+.dataTables_wrapper .dataTables_length select {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+/* Info de paginación */
+.dataTables_wrapper .dataTables_info {
+  color: #64748b;
+  font-size: 13px;
+}

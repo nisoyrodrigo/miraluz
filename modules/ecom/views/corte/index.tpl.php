@@ -197,28 +197,44 @@
         modalBootStrapProducto('<?=$url("ecom/".$this->interfaz."/editEntrega")?>?id=' + data.id,'', '60');
       }
       if(button.hasClass("boton-recalcular")){
-        if(!confirm('¿Recalcular el corte #' + data.id + ' agregando movimientos nuevos?')) return;
+        Swal.fire({
+          title: '¿Recalcular corte #' + data.id + '?',
+          text: 'Se agregarán los movimientos nuevos que no estén asignados a este corte.',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#9333ea',
+          cancelButtonColor: '#64748b',
+          confirmButtonText: 'Sí, recalcular',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if(result.isConfirmed){
+            button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
 
-        button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
-
-        $.ajax({
-          url: "<?=$url("ecom/".$this->interfaz."/recalcular")?>",
-          method: "POST",
-          dataType: "json",
-          data: { id: data.id },
-          success: function(res){
-            if(res.error){
-              alertMessage(res.error);
-            } else {
-              alertMessage('Corte recalculado. Se agregaron ' + res.movimientos_agregados + ' movimiento(s).', 'success');
-              tableData.ajax.reload();
-            }
-          },
-          error: function(){
-            alertMessage('Error al recalcular el corte.');
-          },
-          complete: function(){
-            button.prop('disabled', false).html('<i class="fa fa-retweet"></i>');
+            $.ajax({
+              url: "<?=$url("ecom/".$this->interfaz."/recalcular")?>",
+              method: "POST",
+              dataType: "json",
+              data: { id: data.id },
+              success: function(res){
+                if(res.error){
+                  Swal.fire('Error', res.error, 'error');
+                } else {
+                  Swal.fire({
+                    title: 'Corte recalculado',
+                    text: 'Se agregaron ' + res.movimientos_agregados + ' movimiento(s).',
+                    icon: 'success',
+                    confirmButtonColor: '#cdd464'
+                  });
+                  tableData.ajax.reload();
+                }
+              },
+              error: function(){
+                Swal.fire('Error', 'Error al recalcular el corte.', 'error');
+              },
+              complete: function(){
+                button.prop('disabled', false).html('<i class="fa fa-retweet"></i>');
+              }
+            });
           }
         });
       }
