@@ -342,6 +342,112 @@ class CorteController extends Controller{
   }
 
 
+  public function actionRecalcular(){
+    $this->template = null;
+
+    $corteId = intval($this->params["id"] ?? 0);
+    if($corteId <= 0){
+      $this->error = "Falta id de corte.";
+      return $this->renderJSON();
+    }
+
+    $corte = new Corte($corteId);
+    if(empty($corte->id)){
+      $this->error = "No existe el corte.";
+      return $this->renderJSON();
+    }
+
+    $sucursalId = intval($corte->sucursal);
+    $fecha = $corte->fecha;
+
+    // Rangos del día
+    $inicio = $fecha . " 00:00:00";
+    $fin = date('Y-m-d 00:00:00', strtotime($fecha . ' +1 day'));
+
+    // Contar movimientos pendientes (sin corte asignado) del mismo día y sucursal
+    $pendientes = VentaMovimiento::model()->executeQuery("
+      SELECT COUNT(*) AS total
+      FROM ec_venta_movimiento vm
+      INNER JOIN ec_venta v ON v.id = vm.venta
+      WHERE vm.tipo = 'ingreso'
+        AND vm.corte_id IS NULL
+        AND v.sucursal = $sucursalId
+        AND v.estatus != 6
+        AND vm.created >= '$inicio'
+        AND vm.created < '$fin'
+    ")[0]->total ?? 0;
+
+    if(intval($pendientes) <= 0){
+      $this->error = "No hay movimientos nuevos para agregar al corte.";
+      return $this->renderJSON();
+    }
+
+    // Transacción
+    Corte::model()->executeQuery("START TRANSACTION");
+
+    try {
+      // 1) Asignar movimientos pendientes al corte
+      VentaMovimiento::model()->executeQuery("
+        UPDATE ec_venta_movimiento vm
+        INNER JOIN ec_venta v ON v.id = vm.venta
+        SET vm.corte_id = $corteId
+        WHERE vm.tipo = 'ingreso'
+          AND vm.corte_id IS NULL
+          AND v.sucursal = $sucursalId
+          AND v.estatus != 6
+          AND vm.created >= '$inicio'
+          AND vm.created < '$fin'
+      ");
+
+      // 2) Recalcular totales (todos los movimientos del corte)
+      $tot = VentaMovimiento::model()->executeQuery("
+        SELECT vm.forma_pago, IFNULL(SUM(vm.monto),0) AS total
+        FROM ec_venta_movimiento vm
+        INNER JOIN ec_venta v ON v.id = vm.venta
+        WHERE vm.tipo = 'ingreso'
+          AND vm.corte_id = $corteId
+          AND v.estatus != 6
+        GROUP BY vm.forma_pago
+      ");
+
+      $map = ["efectivo"=>0, "tarjeta"=>0, "tarjetac"=>0, "vales"=>0];
+      foreach($tot as $r){
+        if(isset($map[$r->forma_pago])) $map[$r->forma_pago] = floatval($r->total);
+      }
+
+      $corte->efectivo_ingreso = $map["efectivo"];
+      $corte->tarjeta_ingreso  = $map["tarjeta"];
+      $corte->tarjetac_ingreso = $map["tarjetac"];
+      $corte->vales_ingreso    = $map["vales"];
+
+      // 3) Recalcular depósito sugerido (fondo_caja no se toca)
+      $fondo = floatval($corte->fondo_caja ?? 0);
+      $topeCaja = 1100.0;
+      $efectivoDisponible = $fondo + $corte->efectivo_ingreso;
+      $corte->deposito = max(0, $efectivoDisponible - $topeCaja);
+
+      // 4) Actualizar timestamp de cierre
+      $corte->cerrado_at = date('Y-m-d H:i:s');
+
+      if(!$corte->save()){
+        throw new Exception($corte->error ?: "No se pudo actualizar el corte.");
+      }
+
+      Corte::model()->executeQuery("COMMIT");
+
+      return $this->renderJSON([
+        "corte" => $corte->getAttributes(),
+        "totales" => $map,
+        "movimientos_agregados" => intval($pendientes),
+      ]);
+
+    } catch (Throwable $e) {
+      Corte::model()->executeQuery("ROLLBACK");
+      $this->error = $e->getMessage();
+      return $this->renderJSON();
+    }
+  }
+
 
   public function actionImprimeCorte(){
     $this->template = null;

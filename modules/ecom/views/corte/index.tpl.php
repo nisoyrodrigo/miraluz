@@ -147,9 +147,16 @@
             // Detalle (modal)
             sHtml += "<button class=\"act-btn boton-info\" title=\"Detalle\"><i class=\"fa fa-info\"></i></button>";
 
-            // Imprimir (nuevo)
+            // Imprimir
             sHtml += "&nbsp;<a class=\"act-btn boton-print\" title=\"Imprimir\" target=\"_blank\" href=\"<?=$url("ecom/".$this->interfaz."/imprimeCorte")?>?id=" + row.id + "\">"
                    + "<i class=\"fa fa-print\"></i></a>";
+
+            // Recalcular (solo si es del día de hoy)
+            var hoy = new Date();
+            var hoyStr = String(hoy.getDate()).padStart(2,'0') + '/' + String(hoy.getMonth()+1).padStart(2,'0') + '/' + hoy.getFullYear();
+            if(row.fecha === hoyStr){
+              sHtml += "&nbsp;<button class=\"act-btn boton-recalcular\" title=\"Recalcular (agregar movimientos nuevos)\"><i class=\"fa fa-refresh\"></i></button>";
+            }
 
             return sHtml;
           },
@@ -181,6 +188,32 @@
       }
       if(button.hasClass("boton-entrega")){
         modalBootStrapProducto('<?=$url("ecom/".$this->interfaz."/editEntrega")?>?id=' + data.id,'', '60');
+      }
+      if(button.hasClass("boton-recalcular")){
+        if(!confirm('¿Recalcular el corte #' + data.id + ' agregando movimientos nuevos?')) return;
+
+        button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
+
+        $.ajax({
+          url: "<?=$url("ecom/".$this->interfaz."/recalcular")?>",
+          method: "POST",
+          dataType: "json",
+          data: { id: data.id },
+          success: function(res){
+            if(res.error){
+              alertMessage(res.error);
+            } else {
+              alertMessage('Corte recalculado. Se agregaron ' + res.movimientos_agregados + ' movimiento(s).', 'success');
+              tableData.ajax.reload();
+            }
+          },
+          error: function(){
+            alertMessage('Error al recalcular el corte.');
+          },
+          complete: function(){
+            button.prop('disabled', false).html('<i class="fa fa-refresh"></i>');
+          }
+        });
       }
     });
 
