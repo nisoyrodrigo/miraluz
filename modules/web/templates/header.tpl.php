@@ -7,17 +7,26 @@
     </a>
 
     <!-- Menu Links -->
-    <ul class="ml-nav-links" id="mlNavLinks">
+    <!-- Links originales (comentados):
       <li><a href="<?=$url("catalogo")?>">Catálogo</a></li>
       <li><a href="<?=$url("productos")?>">Productos</a></li>
       <li><a href="<?=$url("sucursales")?>">Sucursales</a></li>
       <li><a href="<?=$url("promos")?>">Promociones</a></li>
       <li><a href="<?=$url("blog")?>">Blog</a></li>
+      <li><a href="<?=$url("citas")?>">Agendar Cita</a></li>
+    -->
+    <ul class="ml-nav-links" id="mlNavLinks">
+      <li><a href="#">Catálogo</a></li>
+      <li><a href="#">Productos</a></li>
+      <li><a href="#">Sucursales</a></li>
+      <li><a href="#">Promociones</a></li>
+      <li><a href="#">Blog</a></li>
       <li><a href="<?=$url("seguimiento")?>">Mi Pedido</a></li>
     </ul>
 
     <!-- CTA Button -->
-    <a href="<?=$url("citas")?>" class="ml-nav-cta">
+    <!-- Original: <a href="<?=$url("citas")?>" class="ml-nav-cta"> -->
+    <a href="#" class="ml-nav-cta">
       <i class="fas fa-calendar-check"></i> Agendar Cita
     </a>
 
