@@ -25,7 +25,7 @@ date_default_timezone_set("America/Mexico_City");
     "modules" => array(
       "web" => array(
         "active" => true,
-        "default" => false,
+        "default" => true,
         "template" => "web",
         "https" => true
       ),
@@ -43,7 +43,7 @@ date_default_timezone_set("America/Mexico_City");
       ),
       "ecom" => array(
         "active" => true,
-        "default" => true,
+        "default" => false,
         "template" => "ec",
         "registerSections" => true,
         "prefix_tables" => "ec",
