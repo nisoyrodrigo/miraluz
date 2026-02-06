@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Óptica Miraluz">
 
-
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="<?=$urlm('assets/favicon/apple-touch-icon.png');?>">
 
@@ -20,52 +19,55 @@
 
     <!-- Manifest -->
     <link rel="manifest" href="<?=$urlm('assets/favicon/site.webmanifest');?>">
-
-    <!-- Opcionales (si quieres mantenerlos) -->
-    <meta name="msapplication-TileColor" content="#000000">
-
-
+    <meta name="msapplication-TileColor" content="#1a1f1a">
+    <meta name="theme-color" content="#1a1f1a">
 
     <title>Óptica Miraluz®</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/vuex@3.1.2/dist/vuex.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
 
     <!-- Styles -->
-    <link href="<?=$urlm("assets/css/bootstrap.min.css");?>" rel="stylesheet" type="text/css" id="bootstrap">
-    <link href="<?=$urlm("assets/css/plugins.css");?>" rel="stylesheet" type="text/css" >
-    <link href="<?=$urlm("assets/css/style.css");?>" rel="stylesheet" type="text/css" >
-    <link href="<?=$urlm("assets/css/coloring.css");?>" rel="stylesheet" type="text/css" >
-    <!-- color scheme -->
-    <link id="colors" href="<?=$urlm("assets/css/colors/scheme-01.css");?>" rel="stylesheet" type="text/css" >
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="<?=$urlm("assets/css/bootstrap.min.css");?>" rel="stylesheet" type="text/css">
+    <link href="<?=$urlm("assets/css/home-miraluz.css");?>" rel="stylesheet" type="text/css">
 
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-
+    <!-- Vue (si lo necesitas para otras páginas) -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuex@3.1.2/dist/vuex.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
   </head>
-  <body>
-    <div id="wrapper">
-      <a href="#" id="back-to-top"></a>
-      <!-- page preloader begin -->
-      <div id="de-loader"></div>
-      <!-- page preloader close -->
-      <?php include_once(Motor::app()->absolute_url.$murl."/templates/header.tpl.php"); ?>
-      <main>
-        <div id="top"></div>
-        <?=$region("Body")?>
-        <?php print $content; ?>
-      </main>
-      <?php include_once(Motor::app()->absolute_url.$murl."/templates/footer.tpl.php"); ?>
+
+  <body class="ml-home">
+    <!-- Cursor Glow (desktop only) -->
+    <div class="ml-cursor-glow" id="mlCursorGlow"></div>
+
+    <!-- Loader -->
+    <div class="ml-loader" id="mlLoader">
+      <div class="ml-loader-eye">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="pupil"></div>
+      </div>
+      <span class="ml-loader-text">CARGANDO...</span>
     </div>
 
+    <!-- Header -->
+    <?php include_once(Motor::app()->absolute_url.$murl."/templates/header.tpl.php"); ?>
 
-    <!-- Core JavaScript -->
-    <script src="<?=$urlm("assets/js/plugins.js");?>"></script>
-    <script src="<?=$urlm("assets/js/designesia.js");?>"></script>
-    <script src="<?=$urlm("assets/js/validation-contact.js");?>"></script>
+    <!-- Main Content -->
+    <main>
+      <?=$region("Body")?>
+      <?php print $content; ?>
+    </main>
 
+    <!-- Footer -->
+    <?php include_once(Motor::app()->absolute_url.$murl."/templates/footer.tpl.php"); ?>
+
+    <!-- JavaScript -->
+    <script src="<?=$urlm("assets/js/home-miraluz.js");?>"></script>
   </body>
 </html>

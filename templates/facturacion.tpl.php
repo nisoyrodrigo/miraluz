@@ -1,234 +1,171 @@
-<section id="subheader" class="bg-color-op-1">
-    <div class="container relative z-2">
-        <div class="row gy-4 gx-5 align-items-center">
-            <div class="col-lg-12">
-                <h1 class="split">Solicitar Factura</h1>
-                <ul class="crumb wow fadeInUp">
-                    <li><a href="<?=$url("seguimiento")?>">Centro de Seguimiento</a></li>
-                    <li class="active">Facturación</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+<!-- SUBHEADER -->
+<section class="ml-section" style="padding: 140px 40px 60px; background: linear-gradient(180deg, var(--ml-dark) 0%, var(--ml-dark-card) 100%);">
+  <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+    <div class="ml-section-tag">Facturación</div>
+    <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 16px;">Solicitar Factura</h1>
+    <nav style="display: flex; justify-content: center; gap: 8px; color: var(--ml-text-muted); font-size: 0.9rem;">
+      <a href="<?=$url("seguimiento")?>" style="color: var(--ml-green-primary); text-decoration: none;">Centro de Seguimiento</a>
+      <span>/</span>
+      <span>Facturación</span>
+    </nav>
+  </div>
 </section>
 
-<section class="relative pt-5 pb-5">
-  <div class="container relative z-2">
-    <div class="row justify-content-center">
+<!-- FORMULARIO -->
+<section class="ml-section" style="padding: 80px 40px;">
+  <div style="max-width: 600px; margin: 0 auto;">
+    <div class="ml-citas-form">
+      <h3 style="text-align: center; margin-bottom: 8px;">Datos de facturación</h3>
+      <p style="text-align: center; color: var(--ml-text-secondary); margin-bottom: 24px;">
+        Ingresa tus datos fiscales. Te enviaremos la factura por correo.
+      </p>
 
-      <div class="col-lg-6 col-md-8">
-
-        <div class="p-4 rounded-1 bg-white shadow-sm">
-
-          <h3 class="mb-3 text-center">Solicitar factura</h3>
-          <p class="text-center mb-4">
-            Ingresa tus datos fiscales y la información de compra.  
-            Nuestro equipo procesará tu solicitud y te enviará la factura por correo.
-          </p>
-
-          <!-- FORMULARIO -->
-          <form id="formFactura" enctype="multipart/form-data">
-
-            <!-- Número de venta -->
-            <div class="mb-3">
-              <label class="form-label">Número de nota</label>
-              <input type="text" name="venta" class="form-control" required>
-            </div>
-
-            <!-- Clave -->
-            <div class="mb-3">
-              <label class="form-label">Clave</label>
-              <input type="password" name="clave" class="form-control" required>
-            </div>
-
-            <!-- RFC -->
-            <div class="mb-3">
-              <label class="form-label">RFC</label>
-              <input type="text" name="rfc" class="form-control" maxlength="13" required>
-            </div>
-
-            <!-- Razón Social -->
-            <div class="mb-3">
-              <label class="form-label">Razón Social</label>
-              <input type="text" name="razon" class="form-control" required>
-            </div>
-
-            <!-- Correo -->
-            <div class="mb-3">
-              <label class="form-label">Correo electrónico</label>
-              <input type="email" name="correo" class="form-control" required>
-            </div>
-
-            <!-- Uso de CFDI -->
-            <div class="mb-4">
-              <label class="form-label">Uso de CFDI</label>
-              <select name="cfdi" class="form-select" required>
-                <option value="">Selecciona una opción</option>
-                <option value="G01">G01 - Adquisición de mercancías</option>
-                <option value="G03">G03 - Gastos en general</option>
-                <option value="P01">P01 - Por definir</option>
-                <option value="D01">D01 - Honorarios médicos</option>
-                <option value="D02">D02 - Gastos médicos</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Régimen fiscal</label>
-              <select name="regimen_fiscal" class="form-select" required>
-                <option value="">Selecciona tu régimen fiscal</option>
-
-                <!-- PERSONAS FÍSICAS -->
-                <option value="605">605 - Sueldos y Salarios e Ingresos Asimilados</option>
-                <option value="606">606 - Arrendamiento</option>
-                <option value="608">608 - Demás ingresos</option>
-                <option value="610">610 - Residentes en el Extranjero sin EP en México</option>
-                <option value="611">611 - Ingresos por Dividendos</option>
-                <option value="612">612 - Personas Físicas con Actividades Empresariales</option>
-                <option value="614">614 - Ingresos por Intereses</option>
-                <option value="615">615 - Régimen de los ingresos por obtención de premios</option>
-                <option value="616">616 - Sin obligaciones fiscales</option>
-                <option value="621">621 - Incorporación Fiscal</option>
-                <option value="625">625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
-                <option value="626">626 - Régimen Simplificado de Confianza (RESICO PF)</option>
-
-                <!-- PERSONAS MORALES -->
-                <option value="601">601 - General de Ley Personas Morales</option>
-                <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
-                <option value="620">620 - Sociedades Cooperativas de Producción</option>
-                <option value="622">622 - Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option>
-                <option value="623">623 - Opcional para Grupos de Sociedades</option>
-                <option value="624">624 - Coordinados</option>
-                <option value="628">628 - Hidrocarburos</option>
-                <option value="630">630 - Enajenación de acciones en bolsa de valores</option>
-              </select>
-            </div>
-
-
-            <div class="mb-3">
-              <label class="form-label">Dirección fiscal</label>
-              <input 
-                type="text" 
-                name="direccion_fiscal" 
-                class="form-control" 
-                placeholder="Calle, número, colonia"
-                required
-              >
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Código postal</label>
-              <input 
-                type="text" 
-                name="codigo_postal" 
-                class="form-control" 
-                maxlength="5"
-                pattern="[0-9]{5}"
-                placeholder="00000"
-                required
-              >
-            </div>
-
-            <div class="mb-4">
-              <label class="form-label">Constancia de situación fiscal (PDF)</label>
-              <input 
-                type="file"
-                name="constancia_fiscal"
-                class="form-control"
-                accept="application/pdf"
-                required
-              >
-              <small class="text-muted">
-                Solo archivos PDF
-              </small>
-            </div>
-
-            <div class="mb-4">
-              <label class="form-label">Observaciones</label>
-              <textarea 
-                name="observaciones" 
-                class="form-control" 
-                rows="3"
-                placeholder="Algún comentario adicional (opcional)"
-              ></textarea>
-            </div>
-
-
-
-            <!-- Botón -->
-            <div class="text-center">
-              <button type="submit" class="btn-main" id="btnFactura">
-                Enviar solicitud
-              </button>
-            </div>
-
-          </form>
-
-          <!-- Resultado -->
-          <div id="resultadoFactura" class="mt-4" style="display:none;"></div>
-
+      <form id="formFactura" enctype="multipart/form-data">
+        <!-- Datos de compra -->
+        <div class="ml-form-row">
+          <div class="ml-form-group">
+            <label>Número de nota</label>
+            <input type="text" name="venta" placeholder="Ej: 1234" required>
+          </div>
+          <div class="ml-form-group">
+            <label>Clave</label>
+            <input type="password" name="clave" placeholder="Tu clave" required>
+          </div>
         </div>
 
-      </div>
+        <!-- RFC y Razón Social -->
+        <div class="ml-form-row">
+          <div class="ml-form-group">
+            <label>RFC</label>
+            <input type="text" name="rfc" maxlength="13" placeholder="XAXX010101000" required style="text-transform: uppercase;">
+          </div>
+          <div class="ml-form-group">
+            <label>Razón Social</label>
+            <input type="text" name="razon" placeholder="Nombre o empresa" required>
+          </div>
+        </div>
 
+        <!-- Correo -->
+        <div class="ml-form-group">
+          <label>Correo electrónico</label>
+          <input type="email" name="correo" placeholder="tu@correo.com" required>
+        </div>
+
+        <!-- Uso CFDI -->
+        <div class="ml-form-group">
+          <label>Uso de CFDI</label>
+          <select name="cfdi" required>
+            <option value="">Selecciona una opción</option>
+            <option value="G01">G01 - Adquisición de mercancías</option>
+            <option value="G03">G03 - Gastos en general</option>
+            <option value="D01">D01 - Honorarios médicos</option>
+            <option value="D02">D02 - Gastos médicos</option>
+            <option value="P01">P01 - Por definir</option>
+          </select>
+        </div>
+
+        <!-- Régimen fiscal -->
+        <div class="ml-form-group">
+          <label>Régimen fiscal</label>
+          <select name="regimen_fiscal" required>
+            <option value="">Selecciona tu régimen</option>
+            <optgroup label="Personas Físicas">
+              <option value="605">605 - Sueldos y Salarios</option>
+              <option value="606">606 - Arrendamiento</option>
+              <option value="612">612 - Actividades Empresariales</option>
+              <option value="616">616 - Sin obligaciones fiscales</option>
+              <option value="626">626 - RESICO</option>
+            </optgroup>
+            <optgroup label="Personas Morales">
+              <option value="601">601 - General de Ley PM</option>
+              <option value="603">603 - PM Fines no Lucrativos</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Dirección y CP -->
+        <div class="ml-form-group">
+          <label>Dirección fiscal</label>
+          <input type="text" name="direccion_fiscal" placeholder="Calle, número, colonia" required>
+        </div>
+
+        <div class="ml-form-row">
+          <div class="ml-form-group">
+            <label>Código postal</label>
+            <input type="text" name="codigo_postal" maxlength="5" pattern="[0-9]{5}" placeholder="00000" required>
+          </div>
+          <div class="ml-form-group">
+            <label>Constancia fiscal (PDF)</label>
+            <input type="file" name="constancia_fiscal" accept="application/pdf" required style="padding: 10px;">
+          </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="ml-form-group">
+          <label>Observaciones (opcional)</label>
+          <textarea name="observaciones" rows="3" placeholder="Algún comentario adicional"></textarea>
+        </div>
+
+        <button type="submit" class="ml-btn-primary" id="btnFactura" style="width: 100%; justify-content: center; margin-top: 8px;">
+          <span>Enviar solicitud</span> <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+
+      <!-- Resultado -->
+      <div id="resultadoFactura" style="display: none; margin-top: 24px;"></div>
     </div>
   </div>
 </section>
 
-
 <script>
 $(document).ready(function(){
-
   $("#formFactura").submit(function(e){
-      e.preventDefault();
+    e.preventDefault();
 
-      let form = $(this);
-      let btn = $("#btnFactura");
-      let resultado = $("#resultadoFactura");
+    let form = $(this);
+    let btn = $("#btnFactura");
+    let resultado = $("#resultadoFactura");
 
-      btn.prop("disabled", true).text("Enviando...");
-      resultado.hide().html("");
+    btn.prop("disabled", true).find("span").text("Enviando...");
+    resultado.hide().html("");
 
-      $.ajax({
-        url: "<?=$url("web/default/solicitarfactura")?>",
-        type: "POST",
-        data: new FormData(this),
-        processData: false,
-        contentType: false,
-        dataType: "json",
+    $.ajax({
+      url: "<?=$url("web/default/solicitarfactura")?>",
+      type: "POST",
+      data: new FormData(this),
+      processData: false,
+      contentType: false,
+      dataType: "json",
+      success: function(res){
+        btn.prop("disabled", false).find("span").text("Enviar solicitud");
 
-        success: function(res){
-            btn.prop("disabled", false).text("Enviar solicitud");
-
-            if (!res.exito) {
-                resultado
-                  .html(`<div class="alert alert-danger">${res.error ?? "No se pudo enviar la solicitud"}</div>`)
-                  .show();
-                return;
-            }
-
-            resultado.html(`
-              <div class="alert alert-success">
-                  <strong>Solicitud enviada correctamente.</strong><br>
-                  Nuestro equipo procesará tu factura y te la enviará al correo proporcionado.
-              </div>
-            `).show();
-
-            form.trigger("reset");
-        },
-
-        error: function(){
-            btn.prop("disabled", false).text("Enviar solicitud");
-            resultado
-              .html(`
-                <div class="alert alert-danger">
-                    Error al conectar con el servidor. Intenta más tarde.
-                </div>
-              `)
-              .show();
+        if (!res.exito) {
+          resultado.html(`
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--ml-radius-sm); padding: 16px; color: #ef4444;">
+              <i class="fas fa-exclamation-circle"></i> ${res.error || "No se pudo enviar la solicitud"}
+            </div>
+          `).show();
+          return;
         }
-      });
 
+        resultado.html(`
+          <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: var(--ml-radius-sm); padding: 16px; color: #22c55e;">
+            <i class="fas fa-check-circle"></i> <strong>Solicitud enviada correctamente.</strong><br>
+            <span style="color: var(--ml-text-secondary);">Te enviaremos la factura al correo proporcionado.</span>
+          </div>
+        `).show();
+
+        form.trigger("reset");
+      },
+      error: function(){
+        btn.prop("disabled", false).find("span").text("Enviar solicitud");
+        resultado.html(`
+          <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--ml-radius-sm); padding: 16px; color: #ef4444;">
+            <i class="fas fa-exclamation-circle"></i> Error al conectar. Intenta más tarde.
+          </div>
+        `).show();
+      }
+    });
   });
-
 });
 </script>

@@ -1,100 +1,64 @@
-<footer class="section-dark">
-    <div class="container">
-        <div class="row gx-5">
-
-            <!-- LOGO + DESCRIPCIÓN -->
-            <div class="col-lg-4 col-sm-6">
-                <img src="<?=$urlm('assets/images/logo-optica-white.png');?>" class="logo-footer" alt="Óptica Logo">
-                <div class="spacer-20"></div>
-                <p>
-                    Somos una óptica comprometida con brindarte atención profesional,
-                    lentes de calidad y un servicio claro y confiable en cada compra.
-                </p>
-
-                <div class="social-icons mb-sm-30">
-                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
-            </div>
-
-            <!-- ENLACES -->
-            <div class="col-lg-4 col-sm-12 order-lg-1 order-sm-2">
-                <div class="row">
-
-                    <div class="col-md-7">
-                        <div class="widget">
-                            <h5>Servicios</h5>
-                            <ul>
-                                <li><a href="#">Pedir factura</a></li>
-                                <li><a href="#">Ver estatus de pedido</a></li>
-                                <li><a href="#">Garantía y devoluciones</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-5">
-                        <div class="widget">
-                            <h5>Enlaces</h5>
-                            <ul>
-                                <li><a href="index.html">Inicio</a></li>
-                                <li><a href="productos.html">Lentes y Armazones</a></li>
-                                <li><a href="nosotros.html">Nosotros</a></li>
-                                <li><a href="contacto.html">Contacto</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- CONTACTO -->
-            <div class="col-lg-4 col-sm-6 order-lg-2 order-sm-1">
-                <div class="widget">
-                    <h5>Contáctanos</h5>
-
-                    <div class="fw-bold text-white">
-                        <i class="icofont-location-pin me-2 id-color"></i>
-                        Dirección
-                    </div>
-                    Av. Principal #123, Ciudad de México
-                    <div class="spacer-20"></div>
-
-                    <div class="fw-bold text-white">
-                        <i class="icofont-phone me-2 id-color"></i>
-                        Teléfono
-                    </div>
-                    55 1234 5678
-                    <div class="spacer-20"></div>
-
-                    <div class="fw-bold text-white">
-                        <i class="icofont-envelope me-2 id-color"></i>
-                        Correo
-                    </div>
-                    contacto@optica.com
-                </div>
-            </div>
-
-        </div>
+<footer class="ml-footer">
+  <div class="ml-footer-content">
+    <!-- Brand -->
+    <div class="ml-footer-brand">
+      <a href="<?=$url("")?>" class="ml-nav-logo">
+        <img src="<?=$url("images/logo-optica.png");?>" alt="Ópticas Miraluz" style="height:36px">
+        <span>Ópticas <span class="accent">Miraluz</span></span>
+      </a>
+      <p>Tu salud visual es nuestra prioridad. Más de 15 años cuidando la visión de familias mexicanas con los más altos estándares de calidad y servicio.</p>
+      <div class="ml-footer-social">
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+      </div>
     </div>
 
-    <!-- SUBFOOTER -->
-    <div class="subfooter">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="de-flex">
-                        <div class="de-flex-col">
-                            © <?=date('Y');?> Óptica — Todos los derechos reservados
-                        </div>
-                        <ul class="menu-simple">
-                            <li><a href="#">Términos y condiciones</a></li>
-                            <li><a href="#">Aviso de privacidad</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Navegación -->
+    <div class="ml-footer-col">
+      <h4>Navegación</h4>
+      <ul>
+        <li><a href="<?=$url("catalogo")?>">Catálogo</a></li>
+        <li><a href="<?=$url("productos")?>">Productos</a></li>
+        <li><a href="<?=$url("sucursales")?>">Sucursales</a></li>
+        <li><a href="<?=$url("promos")?>">Promociones</a></li>
+        <li><a href="<?=$url("blog")?>">Blog</a></li>
+      </ul>
     </div>
 
+    <!-- Servicios -->
+    <div class="ml-footer-col">
+      <h4>Servicios</h4>
+      <ul>
+        <li><a href="<?=$url("citas")?>">Examen Visual</a></li>
+        <li><a href="<?=$url("productos")?>">Lentes Graduados</a></li>
+        <li><a href="<?=$url("productos")?>">Lentes de Contacto</a></li>
+        <li><a href="<?=$url("seguimiento")?>">Mi Pedido</a></li>
+        <li><a href="<?=$url("facturacion")?>">Facturación</a></li>
+      </ul>
+    </div>
+
+    <!-- Legal -->
+    <div class="ml-footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#">Aviso de Privacidad</a></li>
+        <li><a href="#">Términos y Condiciones</a></li>
+        <li><a href="#">Política de Garantía</a></li>
+        <li><a href="#">Política de Devoluciones</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer Bottom -->
+  <div class="ml-footer-bottom">
+    <span>© <?=date('Y');?> Ópticas Miraluz. Todos los derechos reservados.</span>
+    <span>Hecho con <i class="fas fa-heart" style="color:var(--ml-green-primary)"></i> en México</span>
+  </div>
 </footer>
+
+<!-- WhatsApp Float Button -->
+<button class="ml-whatsapp-float" onclick="window.open('https://wa.me/5551234567','_blank')" aria-label="WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+</button>

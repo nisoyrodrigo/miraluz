@@ -1,39 +1,31 @@
-<header class="transparent header-light header-float">
-  <div class="container">
-      <div class="row">
-          <div class="col-md-12">
-              <div class="header-inner">
-                  <div class="de-flex">
-                      <div class="de-flex-col">
-                          <!-- logo begin -->
-                          <div id="logo">
-                              <a href="<?=$url("seguimiento")?>">
-                                  <img class="logo-main" src="<?=$urlm("assets/images/logo-optica-dark.svg");?>" alt="" >
-                                  <img class="logo-scroll" src="<?=$urlm("assets/images/logo-optica-dark.svg");?>" alt="" >
-                                  <img class="logo-mobile" src="<?=$urlm("assets/images/logo-optica-dark.svg");?>" alt="" >
-                              </a>
-                          </div>
-                          <!-- logo close -->
-                      </div>
+<nav class="ml-nav" id="mlNavbar">
+  <div class="ml-nav-inner">
+    <!-- Logo -->
+    <a href="<?=$url("")?>" class="ml-nav-logo">
+      <img src="<?=$url("images/logo-optica.png");?>" alt="Ópticas Miraluz">
+      <span>Ópticas <span class="accent">Miraluz</span></span>
+    </a>
 
-                      <div class="de-flex-col">
-                          <div class="de-flex-col header-col-mid">
-                              <ul id="mainmenu">
-                                  <li><a class="menu-item" href="blog.html">Facturación</a></li>
-                                  <li><a class="menu-item" href="contact.html">Mi pedido</a></li>
-                              </ul>
-                          </div>
-                      </div>
+    <!-- Menu Links -->
+    <ul class="ml-nav-links" id="mlNavLinks">
+      <li><a href="<?=$url("catalogo")?>">Catálogo</a></li>
+      <li><a href="<?=$url("productos")?>">Productos</a></li>
+      <li><a href="<?=$url("sucursales")?>">Sucursales</a></li>
+      <li><a href="<?=$url("promos")?>">Promociones</a></li>
+      <li><a href="<?=$url("blog")?>">Blog</a></li>
+      <li><a href="<?=$url("seguimiento")?>">Mi Pedido</a></li>
+    </ul>
 
-                      <div class="de-flex-col">
-                          <a class="btn-main fx-slide w-100" href="<?=$url("contacto")?>"><span>Contáctanos</span></a>
-                          <div class="menu_side_area">
-                              <span id="menu-btn"></span>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
+    <!-- CTA Button -->
+    <a href="<?=$url("citas")?>" class="ml-nav-cta">
+      <i class="fas fa-calendar-check"></i> Agendar Cita
+    </a>
+
+    <!-- Hamburger Menu (Mobile) -->
+    <button class="ml-hamburger" id="mlHamburger" aria-label="Menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </div>
-</header>
+</nav>

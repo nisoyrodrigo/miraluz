@@ -1,81 +1,51 @@
-<section id="subheader" class="bg-color-op-1">
-    <div class="container relative z-2">
-        <div class="row gy-4 gx-5 align-items-center">
-            <div class="col-lg-12">
-                <h1 class="split">Centro de Seguimiento</h1>
-                <ul class="crumb wow fadeInUp">
-                    <li><a href="<?=$url("seguimiento")?>">Inicio</a></li>
-                    <li class="active">Centro de Seguimiento</li>
-                </ul>   
-            </div>
-        </div>
-    </div>
+<!-- SUBHEADER -->
+<section class="ml-section" style="padding: 140px 40px 60px; background: linear-gradient(180deg, var(--ml-dark) 0%, var(--ml-dark-card) 100%);">
+  <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+    <div class="ml-section-tag">Centro de Atención</div>
+    <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 16px;">Centro de Seguimiento</h1>
+    <p style="color: var(--ml-text-secondary); max-width: 500px; margin: 0 auto;">
+      Consulta el estado de tu pedido o solicita tu factura de forma rápida y sencilla.
+    </p>
+  </div>
 </section>
 
-<section class="relative">
-  <div class="container relative z-2">
-    <div class="row g-4">
+<!-- CARDS DE OPCIONES -->
+<section class="ml-section" style="padding: 80px 40px;">
+  <div style="max-width: 900px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
 
-        <!-- CARD: Estatus de pedido -->
-        <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0s">
-          <div class="hover">
-              <div class="relative overflow-hidden rounded-1">
-                <a href="<?=$url("pedido")?>" class="d-block hover">
-                  <div class="relative overflow-hidden rounded-1">
-                    <img src="<?=$urlm("assets/images/services/1.webp");?>" class="w-100 hover-scale-1-2" alt="">
-                    <div class="gradient-edge-bottom color h-90 op-8"></div>
-                  </div>
-              
-                  <div class="p-4 relative bg-white rounded-1 mx-4 mt-min-100 z-2">
-                    <div class="abs top-0 end-0 mt-min-30 me-4 circle bg-color w-60px h-60px">
-                      <img src="<?=$urlm("assets/images/misc/up-right-arrow.webp");?>" class="w-60px p-20" alt="">
-                    </div>
-                    <h4>Ver estatus de tu pedido</h4>
-                    <p class="mb-0">Consulta el avance de tus lentes ingresando tu número de ticket.</p>
-                  </div>
-                </a>
-              </div>
-          </div>
+      <!-- Card: Ver estatus de pedido -->
+      <a href="<?=$url("pedido")?>" class="ml-service-card ml-reveal" style="text-decoration: none;">
+        <div class="ml-service-icon">
+          <i class="fas fa-search"></i>
         </div>
+        <h3>Ver estatus de tu pedido</h3>
+        <p>Consulta el avance de tus lentes ingresando tu número de nota y clave.</p>
+        <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+      </a>
 
-        <!-- CARD: Solicitar factura -->
-        <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.2s">
-          <div class="hover">
-              <div class="relative overflow-hidden rounded-1">
-                <a href="<?=$url("facturacion")?>" class="d-block hover">
-                  <div class="relative overflow-hidden rounded-1">
-                    <img src="<?=$urlm("assets/images/services/2.webp");?>" class="w-100 hover-scale-1-2" alt="">
-                    <div class="gradient-edge-bottom color h-90 op-8"></div>
-                  </div>
-              
-                  <div class="p-4 relative bg-white rounded-1 mx-4 mt-min-100 z-2">
-                    <div class="abs top-0 end-0 mt-min-30 me-4 circle bg-color w-60px h-60px">
-                      <img src="<?=$urlm("assets/images/misc/up-right-arrow.webp");?>" class="w-60px p-20" alt="">
-                    </div>
-                    <h4>Solicitar factura</h4>
-                    <p class="mb-0">Solicita tu factura fácilmente con tu ticket o número de venta.</p>
-                  </div>
-                </a>
-              </div>
-          </div>
+      <!-- Card: Solicitar factura -->
+      <a href="<?=$url("facturacion")?>" class="ml-service-card ml-reveal ml-reveal-delay-1" style="text-decoration: none;">
+        <div class="ml-service-icon">
+          <i class="fas fa-file-invoice"></i>
         </div>
+        <h3>Solicitar factura</h3>
+        <p>Solicita tu factura fácilmente con tu número de nota y datos fiscales.</p>
+        <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+      </a>
 
     </div>
   </div>
 </section>
 
-<!-- BANNER ABAJO, YA TRADUCIDO -->
-<section class="bg-color relative text-light pt-50 pb-50">
-  <div class="container relative z-2">
-    <div class="row g-4 align-items-center">
-      <div class="col-md-9">
-        <h3 class="mb-0 fs-32 split">Agenda tu estudio de la vista y cuida tu salud visual</h3>
-      </div>
-      <div class="col-lg-3 text-lg-end">
-        <a class="btn-main btn-line fx-slide" href="book-your-visit.html">
-          <span>Agendar cita</span>
-        </a>
-      </div>
-    </div>
+<!-- BANNER CTA -->
+<section style="background: var(--ml-green-primary); padding: 60px 40px;">
+  <div style="max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px;">
+    <h3 style="font-size: 1.5rem; color: var(--ml-dark); margin: 0; font-family: 'DM Sans', sans-serif;">
+      Agenda tu estudio de la vista y cuida tu salud visual
+    </h3>
+    <a href="<?=$url("citas")?>" class="ml-btn-secondary" style="border-color: var(--ml-dark); color: var(--ml-dark);">
+      <span>Agendar cita</span> <i class="fas fa-calendar-check"></i>
+    </a>
   </div>
 </section>
