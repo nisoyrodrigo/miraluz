@@ -1,4 +1,5 @@
 <!-- CITAS -->
+<?php $sucursalesCitas = Sucursal::model()->findAll("WHERE id IN (2, 4) AND estatus = 1"); ?>
 <section class="ml-section" id="ml-citas">
   <div class="ml-section-header ml-reveal">
     <div class="ml-section-tag">Agenda tu Cita</div>
@@ -56,9 +57,9 @@
         <label>Sucursal</label>
         <select>
           <option>Selecciona sucursal</option>
-          <option>Sucursal Centro</option>
-          <option>Sucursal Plaza Norte</option>
-          <option>Sucursal Valle</option>
+          <?php foreach ($sucursalesCitas as $suc): ?>
+          <option value="<?=$suc->id?>"><?=$suc->nombre?></option>
+          <?php endforeach; ?>
         </select>
       </div>
       <div class="ml-form-row">

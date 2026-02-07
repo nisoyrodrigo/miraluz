@@ -120,7 +120,7 @@
 <div class="ml-stats-bar">
   <div class="ml-stats-bar-inner">
     <div class="ml-stat"><div class="ml-stat-number" data-count="15">0</div><div class="ml-stat-label">Años de experiencia</div></div>
-    <div class="ml-stat"><div class="ml-stat-number" data-count="3">0</div><div class="ml-stat-label">Sucursales</div></div>
+    <div class="ml-stat"><div class="ml-stat-number" data-count="2">0</div><div class="ml-stat-label">Sucursales</div></div>
     <div class="ml-stat"><div class="ml-stat-number" data-count="10000">0</div><div class="ml-stat-label">Clientes satisfechos</div></div>
     <div class="ml-stat"><div class="ml-stat-number" data-count="50">0</div><div class="ml-stat-label">Marcas premium</div></div>
   </div>
@@ -307,6 +307,7 @@
 </section>
 
 <!-- SUCURSALES -->
+<?php $sucursales = Sucursal::model()->findAll("WHERE id IN (2, 4) AND estatus = 1"); ?>
 <section class="ml-section" id="ml-sucursales">
   <div class="ml-section-header ml-reveal">
     <div class="ml-section-tag">Nuestras Sucursales</div>
@@ -329,35 +330,16 @@
 
     <!-- Lista de sucursales -->
     <div class="ml-branch-list">
-      <div class="ml-branch-card active ml-reveal">
-        <h3><i class="fas fa-store" style="color:var(--ml-green-primary);margin-right:8px;font-size:0.9rem"></i> Sucursal Centro</h3>
+      <?php foreach ($sucursales as $i => $suc): ?>
+      <div class="ml-branch-card<?php if ($i == 0) echo ' active'; ?> ml-reveal<?php if ($i > 0) echo ' ml-reveal-delay-'.$i; ?>">
+        <h3><i class="fas fa-store" style="color:var(--ml-green-primary);margin-right:8px;font-size:0.9rem"></i> <?=$suc->nombre?></h3>
         <div class="branch-details">
-          <div class="detail"><i class="fas fa-map-pin"></i> Av. Juárez #234, Col. Centro</div>
-          <div class="detail"><i class="fas fa-clock"></i> Lun-Sáb: 9:00 - 20:00</div>
-          <div class="detail"><i class="fas fa-phone"></i> (555) 123-4567</div>
+          <div class="detail"><i class="fas fa-map-pin"></i> <?=$suc->direccion?></div>
+          <div class="detail"><i class="fas fa-clock"></i> <?=$suc->horario?></div>
+          <div class="detail"><i class="fas fa-phone"></i> <?=$suc->telefono?></div>
         </div>
-        <div class="branch-status"><span class="dot"></span> Abierto ahora</div>
       </div>
-
-      <div class="ml-branch-card ml-reveal ml-reveal-delay-1">
-        <h3><i class="fas fa-store" style="color:var(--ml-green-primary);margin-right:8px;font-size:0.9rem"></i> Sucursal Plaza Norte</h3>
-        <div class="branch-details">
-          <div class="detail"><i class="fas fa-map-pin"></i> Plaza Norte, Local 15-B</div>
-          <div class="detail"><i class="fas fa-clock"></i> Lun-Dom: 10:00 - 21:00</div>
-          <div class="detail"><i class="fas fa-phone"></i> (555) 234-5678</div>
-        </div>
-        <div class="branch-status"><span class="dot"></span> Abierto ahora</div>
-      </div>
-
-      <div class="ml-branch-card ml-reveal ml-reveal-delay-2">
-        <h3><i class="fas fa-store" style="color:var(--ml-green-primary);margin-right:8px;font-size:0.9rem"></i> Sucursal Valle</h3>
-        <div class="branch-details">
-          <div class="detail"><i class="fas fa-map-pin"></i> Blvd. del Valle #890</div>
-          <div class="detail"><i class="fas fa-clock"></i> Lun-Sáb: 9:00 - 19:00</div>
-          <div class="detail"><i class="fas fa-phone"></i> (555) 345-6789</div>
-        </div>
-        <div class="branch-status closed"><span class="dot"></span> Cerrado</div>
-      </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
@@ -538,9 +520,9 @@
           <label>Sucursal</label>
           <select name="sucursal" required>
             <option value="">Selecciona sucursal</option>
-            <option value="centro">Sucursal Centro</option>
-            <option value="plaza_norte">Sucursal Plaza Norte</option>
-            <option value="valle">Sucursal Valle</option>
+            <?php foreach ($sucursales as $suc): ?>
+            <option value="<?=$suc->id?>"><?=$suc->nombre?></option>
+            <?php endforeach; ?>
           </select>
         </div>
         <div class="ml-form-row">

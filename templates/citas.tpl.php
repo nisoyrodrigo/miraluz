@@ -1,3 +1,4 @@
+<?php $sucursalesCitas = Sucursal::model()->findAll("WHERE id IN (2, 4) AND estatus = 1"); ?>
 <!-- SUBHEADER -->
 <section class="ml-section" style="padding: 140px 40px 60px; background: linear-gradient(180deg, var(--ml-dark) 0%, var(--ml-dark-card) 100%);">
   <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
@@ -64,9 +65,9 @@
             <label>Sucursal</label>
             <select name="sucursal" required>
               <option value="">Selecciona sucursal</option>
-              <option value="centro">Sucursal Centro</option>
-              <option value="plaza_norte">Sucursal Plaza Norte</option>
-              <option value="valle">Sucursal Valle</option>
+              <?php foreach ($sucursalesCitas as $suc): ?>
+              <option value="<?=$suc->id?>"><?=$suc->nombre?></option>
+              <?php endforeach; ?>
             </select>
           </div>
           <div class="ml-form-row">
